@@ -1,0 +1,33 @@
+{
+  "name": "view.data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/debug": "0.0.29",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.7.0",
+    "gulp-gzip": "^1.4.0",
+    "gulp-typescript": "^3.1.7",
+    "gulp-util": "^3.0.8",
+    "gulp-webpack": "^1.5.0",
+    "ts-loader": "^2.1.0",
+    "tslib": "^1.7.1",
+    "typescript": "^2.3.4",
+    "webpack": "^2.6.1"
+  },
+  "dependencies": {
+    "equaljs": "github:kildevaeld/equaljs",
+    "mixins.events": "github:kildevaeld/mixins.events",
+    "view": "github:kildevaeld/view#development"
+  }
+}
