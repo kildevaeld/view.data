@@ -125,13 +125,13 @@ export class BaseCollectionView<T extends Element, U extends ICollection<M>, M, 
 
 
     protected _createChildView(model: M): V {
-        let Vi: Constructor<V> = this.options.childView || this.childView || (View as any);
+        let Vi: Constructor<any> = this.options.childView || this.childView || (View as any);
 
-        let el = Invoker.get<V>(Vi);
+        let el = Invoker.get<any>(Vi);
         el.model = model;
         el.options.attachId = true;
 
-        return el;
+        return el as V;
 
     }
 
