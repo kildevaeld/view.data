@@ -25,6 +25,7 @@ export interface Todos extends BaseViewOptions<HTMLElement> {
 })
 export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>(withModel(TemplateView)) {
     edit: boolean = false;
+    ui: { input: HTMLInputElement }
     template = (model: Todo) => this.edit ?
         `<input type="text" value="${model.name}"><button>done</button>`
         : `
@@ -32,7 +33,7 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>
         `
 
     @model.change('name')
-    onNameChange(value: any) {
+    onNameChange() {
         this.render();
     }
 
@@ -53,19 +54,16 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>
 
 
 export class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ArrayCollection<Todo>>(View, TodoListItem, ArrayCollection) {
-    @collection.event('add')
-    onChange(o) {
-        console.log(o)
-    }
+
 }
 
 export class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(withAttachedViews(View))) {
-    template = (data: Todos) => (`
+    template = () => `
         <h1>Todos</h1>
         <button class="create-btn">Create</button>
         <ul class="list-view"></ul>
         
-    `)
+    `
 
     @attach('.list-view')
     list: TodoList;
