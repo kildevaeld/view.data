@@ -22,13 +22,17 @@ export function isDestroyable(a: any): a is Destroyable {
 export interface ICollection<T> {
     length: number;
     item(index: number): T | undefined;
+    push(...items: T[]): number;
+    pop(): T | undefined;
     //indexOf(item: T): number;
 }
 
 export namespace ModelEvents {
     export const Add = "add";
+    export const BeforeRemove = "before:remove";
     export const Remove = "remove";
     export const Clear = "clear";
+    export const BeforeSort = "before:sort";
     export const Sort = "sort";
     export const Change = "change";
     export const Reset = "reset";

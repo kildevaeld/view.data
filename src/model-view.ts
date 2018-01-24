@@ -1,5 +1,5 @@
-import { View, Constructor, IView, triggerMethodOn, isString, isFunction } from 'view';
-import { IModel, ModelEvents } from './types';
+import { View, Constructor, triggerMethodOn, isString, isFunction } from 'view';
+import { IModel } from './types';
 import { isEventEmitter } from 'mixins.events'
 
 export interface IModelView<M> {
@@ -35,33 +35,18 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
             triggerMethodOn(this, 'set:model');
         }
 
-        /*delelegateEvents() {
-            super.delegateEvents();
-            if (this._model)
-                this._delegateModelEvents(this._model);
-            return this;
-        }
-
-        undelegateEvents() {
-            super.undelegateEvents();
-            if (this._model)
-                this._undelegateModelEvents(this._model);
-            return this;
-        }*/
-
         private _undelegateModelEvents(model: M) {
 
-            if (!this.modelEvents || !this.model || !isEventEmitter(this.model)) {
-                return this;
+            if (!this.modelEvents || !model || !isEventEmitter(model)) {
+                return;
             }
             for (let key in this.modelEvents) {
-                const model = this.model;
+
                 this.modelEvents[key].forEach(m => {
                     if (isString(m)) {
                         if (isFunction((this as any)[m])) {
                             m = (this as any)[m];
                         } else {
-                            console.log(m, this)
                             throw new Error('not a function');
                         }
                     }
@@ -73,7 +58,7 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
 
         private _delegateModelEvents(model: M) {
             if (!this.modelEvents || !this.model || !isEventEmitter(this.model)) {
-                return this;
+                return;
             }
 
             for (let key in this.modelEvents) {
@@ -87,7 +72,6 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
                             throw new Error('not a function');
                         }
                     }
-                    //console.log(m, key);
                     model!.on(key, m as any, this);
                 });
             }

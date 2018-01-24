@@ -1,23 +1,15 @@
-import { equal } from 'equaljs';
 import { IModel } from './types';
 import { IModelView } from './model-view';
 import { has, extend } from 'view';
 
-function setter<T extends IModel, U>(target: T, prop: PropertyKey) {
-    /*if (!(target instanceof Model)) {
-        throw new TypeError("Target must be a EventEmitter")
-    }*/
-
+function setter<T extends IModel, U>(_: T, prop: PropertyKey) {
     return function $observableSetter(this: T, value: U) {
-        /*if (this instanceof Model) {
-            return this.set(prop, value)
-        }*/
         return this.set(prop, value)
     }
 }
 
 function getter<T extends IModel, U>(_: T, prop: PropertyKey) {
-    return function (this: T): U {
+    return function $observableGetter(this: T): U {
         return this.get<U>(prop)
     }
 }
@@ -45,30 +37,23 @@ export function property<T extends IModel, U>(target: T, prop: any, descriptor?:
         let oSet = descriptor.set;
 
         descriptor.set = function $observableSet(this: IModel, value: U) {
-
-            /*let old = this.get(prop);
-            if (equal(old, value)) {
-                return;
-            }*/
-
             return this.set(prop, value);
-            /*oSet(value);
-            this.trigger(`change:${prop}`, old, value)
-            this.trigger('change', { [prop]: value })*/
+
         }
     }
 }
 
 
 export namespace model {
-    export function change(property?: string) {
+
+    export function event(event: string, property?: string) {
         return function <T extends IModelView<M>, M>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
             if (!desc) throw new Error('no description');
             if (typeof desc.value !== 'function') {
                 throw new TypeError('must be a function');
             }
 
-            const key = "change" + (property ? ':' + property : '');
+            const key = event + (property ? ':' + property : '');
             if (target.modelEvents && has(target.modelEvents, key)) {
                 let old = target.modelEvents[key]
                 if (!Array.isArray(old)) old = [old];
@@ -80,19 +65,11 @@ export namespace model {
                 });
 
             }
-
-            /*const key = `${change} ${selector}`
-            if (target.events && has(target.events, key)) {
-                let old = target.events[key]
-                if (!Array.isArray(old)) old = [old];
-                old.push(property as any);
-                target.events[key] = old;
-            } else {
-                target.events = extend(target.events || {}, {
-                    [key]: property
-                });
-
-            }*/
         }
     }
+
+    export function change(property?: string) {
+        return event("change", property);
+    }
+
 }

@@ -1,6 +1,6 @@
-
 import { ICollection, ModelEvents, isDestroyable } from './types';
 import { EventEmitter } from 'mixins.events';
+import { equal } from 'equaljs';
 
 export class ArrayCollection<T> extends EventEmitter(class { }) implements ICollection<T> {
     constructor(private a: Array<T> = []) {
@@ -39,10 +39,10 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
      * 
      * @memberof ArrayCollection
      */
-    push(m: T, trigger = true) {
+    push(m: T) {
         this.a.push(m);
-        if (trigger)
-            this.trigger(ModelEvents.Add, m, this.a.length - 1);
+        this.trigger(ModelEvents.Add, m, this.a.length - 1);
+        return this.length;
     }
 
     /**
@@ -68,15 +68,27 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
     }
 
     indexOf(m: T) {
-        return this.a.indexOf(m);
+        for (let i = 0, ii = this.length; i < ii; i++) {
+            if (equal(this.a[i], m)) return i;
+        }
+        return -1;
     }
 
-    remove(index: number): T | undefined {
+    removeAtIndex(index: number): T | undefined {
         let m = this.item(index);
         if (!m) return undefined;
+        this.trigger(ModelEvents.BeforeRemove, m, index);
         this.a.splice(index, 1);
         this.trigger(ModelEvents.Remove, m, index);
         return m;
+    }
+
+    remove(model: T): T | undefined {
+        let i = -1
+        if (!~(i = this.indexOf(model))) {
+            return void 0;
+        };
+        return this.removeAtIndex(i);
     }
 
     find(fn: (model: T) => boolean): T | undefined
@@ -86,6 +98,7 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
     }
 
     sort(fn: (a: T, b: T) => number) {
+        this.trigger(ModelEvents.BeforeSort);
         this.a.sort(fn);
         this.trigger(ModelEvents.Sort);
     }
@@ -103,7 +116,7 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
     }
 
     filter(fn: (a: T) => boolean): this {
-        return new (<any>this).constructor(this.a.filter(fn));
+        return Reflect.construct(this.constructor, [this.a.filter(fn)]);
     }
 
     map<U>(fn: (a: T) => U): ArrayCollection<U> {

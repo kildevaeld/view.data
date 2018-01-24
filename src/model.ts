@@ -11,6 +11,7 @@ export class Model extends EventEmitter(class { }) implements IModel {
 
     [key: string]: any;
 
+
     constructor() {
         super();
         this[MetaKeys.Attributes] = new Map<PropertyKey, any>();

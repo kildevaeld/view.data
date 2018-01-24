@@ -1,4 +1,4 @@
-import { BaseView, BaseViewOptions, View, Constructor, triggerMethodOn, IInvoker, IViewElement, Invoker } from 'view';
+import { BaseView, BaseViewOptions, View, Constructor, triggerMethodOn, IViewElement, Invoker } from 'view';
 import { ICollection, ModelEvents, IModel } from './types';
 import { isEventEmitter, IEventEmitter } from 'mixins.events';
 
@@ -76,8 +76,6 @@ export class BaseCollectionView<T extends Element, U extends ICollection<M>, M, 
             if (v.el && v.el.parentNode)
                 v.el!.parentElement!.removeChild(v.el)
         }
-
-
 
         this._childViews = [];
     }

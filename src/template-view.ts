@@ -1,5 +1,6 @@
 import { View, withTemplate, withElement, Constructor, IViewElement, BaseViewOptions, isFunction, result } from 'view';
 
+
 export interface TemplateViewOptions<M> extends BaseViewOptions<HTMLElement> {
     template?: string | ((data: M) => string)
 }

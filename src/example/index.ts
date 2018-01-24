@@ -3,6 +3,7 @@ import { View, withAttachedViews, withTemplate, attach, Constructor, event, Base
 import { TemplateView } from '../template-view';
 import { EventListener } from 'mixins.events';
 
+
 export class Todo extends Model {
     @property
     name: string;
@@ -34,6 +35,7 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>
     onNameChange(value: any) {
         this.render();
     }
+
 
     @event.click('button')
     onInput() {
