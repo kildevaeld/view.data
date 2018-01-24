@@ -1,5 +1,6 @@
-import { IModel } from './types';
+import { IModel, ICollection } from './types';
 import { IModelView } from './model-view';
+import { ICollectionView, ChildViewType } from './collection-view';
 import { has, extend } from 'view';
 
 function setter<T extends IModel, U>(_: T, prop: PropertyKey) {
@@ -43,28 +44,46 @@ export function property<T extends IModel, U>(target: T, prop: any, descriptor?:
     }
 }
 
+function _event<T extends any>(event: string, property: string | undefined, target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>, targetKey: string) {
+    if (!desc) throw new Error('no description');
+    if (typeof desc.value !== 'function') {
+        throw new TypeError('must be a function');
+    }
+
+    const key = event + (property ? ':' + property : '');
+    if (target[targetKey] && has(target[targetKey], key)) {
+        let old = target[targetKey][key]
+        if (!Array.isArray(old)) old = [old];
+        old.push(prop as any);
+        target[targetKey][key] = old;
+    } else {
+        target[targetKey] = extend(target[targetKey] || {}, {
+            [key]: [prop]
+        });
+
+    }
+}
+
 
 export namespace model {
 
     export function event(event: string, property?: string) {
         return function <T extends IModelView<M>, M>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
-            if (!desc) throw new Error('no description');
-            if (typeof desc.value !== 'function') {
-                throw new TypeError('must be a function');
-            }
+            return _event(event, property, target, prop, desc, "modelEvents");
+        }
+    }
 
-            const key = event + (property ? ':' + property : '');
-            if (target.modelEvents && has(target.modelEvents, key)) {
-                let old = target.modelEvents[key]
-                if (!Array.isArray(old)) old = [old];
-                old.push(prop as any);
-                target.modelEvents[key] = old;
-            } else {
-                target.modelEvents = extend(target.modelEvents || {}, {
-                    [key]: [prop]
-                });
+    export function change(property?: string) {
+        return event("change", property);
+    }
 
-            }
+}
+
+export namespace collection {
+
+    export function event(event: string, property?: string) {
+        return function <T extends ICollectionView<C, M, V>, C extends ICollection<M>, M extends IModel, V extends ChildViewType<M>>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
+            return _event(event, property, target, prop, desc, "collectionEvents");
         }
     }
 

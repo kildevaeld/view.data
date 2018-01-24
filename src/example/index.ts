@@ -1,5 +1,5 @@
-import { CollectionView, ArrayCollection, Model, property, model, withModel } from '../index';
-import { View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from 'view'
+import { withCollection, ArrayCollection, Model, property, model, collection, withModel } from '../index';
+import { BaseView, View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from 'view'
 import { TemplateView } from '../template-view';
 import { EventListener } from 'mixins.events';
 
@@ -40,7 +40,7 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>
     @event.click('button')
     onInput() {
         this.edit = false;
-        this.model.name = this.el!.querySelector('input')!.value;
+        this.model.name = this.ui.input.value;
     }
 
     @event.click('h5')
@@ -51,9 +51,12 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>
 
 }
 
-export class TodoList extends CollectionView<TodoListItem, Todo> {
-    collection: ArrayCollection<Todo>
-    childView = TodoListItem;
+
+export class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ArrayCollection<Todo>>(View, TodoListItem, ArrayCollection) {
+    @collection.event('add')
+    onChange(o) {
+        console.log(o)
+    }
 }
 
 export class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(withAttachedViews(View))) {
@@ -67,20 +70,15 @@ export class Page extends withAttachedViews(withTemplate<Constructor<View>, Todo
     @attach('.list-view')
     list: TodoList;
 
-    constructor(options: Todos) {
-        super(options);
-        this.list.collection = options.todos;
-    }
-
     @event.click('.create-btn')
-    onCreateClick(e: Event) {
+    onCreateClick() {
+        console.log('click')
         this.list.collection!.push(new Todo("New Todo"));
     }
 }
 
 
-var view = new Page({
-    el: document.querySelector('#main') as HTMLElement,
-    todos: new ArrayCollection()
+new Page({
+    el: document.querySelector('#main') as HTMLElement
 }).render();
 
