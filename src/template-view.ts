@@ -1,11 +1,11 @@
-import { View, withTemplate, withElement, Constructor, IViewElement, BaseViewOptions, isFunction, result } from 'view';
+import { View, withTemplate, withElement, Constructor, IViewElement, BaseViewOptions, isFunction, result, IViewTemplate } from 'view';
 
 
 export interface TemplateViewOptions<M> extends BaseViewOptions<HTMLElement> {
     template?: string | ((data: M) => string)
 }
 
-export class TemplateView<M = any> extends withTemplate<Constructor<View & IViewElement>, any>(withElement(View)) {
+export class TemplateView<M = any> extends withTemplate<Constructor<View & IViewElement>, any>(withElement(View)) implements IViewTemplate<M> {
     model: M;
 
     options: TemplateViewOptions<M>;

@@ -1,15 +1,16 @@
 import { ICollection, ModelEvents, isDestroyable } from './types';
-import { EventEmitter } from 'mixins.events';
+import { EventEmitter } from './event-emitter';
 import { equal } from 'equaljs';
 
-export class ArrayCollection<T> extends EventEmitter(class { }) implements ICollection<T> {
+
+export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
     constructor(private a: Array<T> = []) {
         super();
     }
 
     /**
      * The length of the array
-     * 
+     *
      * @readonly
      * @type {number}
      * @memberof ArrayCollection
@@ -20,10 +21,10 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
 
     /**
      * Get item at index
-     * 
-     * @param {number} index 
-     * @returns {(T | undefined)} 
-     * 
+     *
+     * @param {number} index
+     * @returns {(T | undefined)}
+     *
      * @memberof ArrayCollection
      */
     item(index: number): T | undefined {
@@ -33,10 +34,10 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
 
     /**
      * Push an item and optionally trigger a change event
-     * 
-     * @param {T} m 
-     * @param {boolean} [trigger=true] 
-     * 
+     *
+     * @param {T} m
+     * @param {boolean} [trigger=true]
+     *
      * @memberof ArrayCollection
      */
     push(m: T) {
@@ -47,10 +48,10 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
 
     /**
      * Pop a item from the array and optinally trigger a change event
-     * 
-     * @param {boolean} [trigger=true] 
-     * @returns {(T | undefined)} 
-     * 
+     *
+     * @param {boolean} [trigger=true]
+     * @returns {(T | undefined)}
+     *
      * @memberof ArrayCollection
      */
     pop(trigger = true): T | undefined {
@@ -105,9 +106,9 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
 
     /**
      * Reset the array
-     * 
-     * @param {T[]} [a] 
-     * 
+     *
+     * @param {T[]} [a]
+     *
      * @memberof ArrayCollection
      */
     reset(a?: T[]) {
@@ -132,9 +133,9 @@ export class ArrayCollection<T> extends EventEmitter(class { }) implements IColl
 
     /**
      * Returns a copy of the array
-     * 
-     * @returns 
-     * 
+     *
+     * @returns
+     *
      * @memberof ArrayCollection
      */
     array() { return [...this.a]; }

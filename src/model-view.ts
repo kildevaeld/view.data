@@ -2,8 +2,9 @@ import { View, Constructor, triggerMethodOn, isString, isFunction } from 'view';
 import { IModel } from './types';
 import { isEventEmitter } from 'mixins.events'
 
-export interface IModelView<M> {
+export interface IModelView<M extends IModel> {
     model?: M;
+    setModel(model?: M): this;
     modelEvents?: any;
 }
 
@@ -22,7 +23,7 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
             return this._model;
         }
 
-        protected setModel(model?: M) {
+        setModel(model?: M) {
             triggerMethodOn(this, 'before:set:model');
             if (this._model) {
                 this._undelegateModelEvents(this._model)
@@ -33,6 +34,7 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
                 this._delegateModelEvents(model);
 
             triggerMethodOn(this, 'set:model');
+            return this;
         }
 
         private _undelegateModelEvents(model: M) {

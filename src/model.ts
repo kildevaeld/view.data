@@ -1,13 +1,13 @@
 import { equal } from 'equaljs';
 import { MetaKeys, IModel } from './types';
-import { EventEmitter } from 'mixins.events';
+import { EventEmitter } from './event-emitter';
 import { triggerMethodOn } from 'view';
 
 export interface ModelSetOptions {
     silent?: boolean;
 }
 
-export class Model extends EventEmitter(class { }) implements IModel {
+export class Model extends EventEmitter implements IModel {
 
     [key: string]: any;
 

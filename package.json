@@ -1,8 +1,8 @@
 {
   "name": "view.data",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "description": "",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,5 +29,6 @@
     "equaljs": "github:kildevaeld/equaljs",
     "mixins.events": "github:kildevaeld/mixins.events",
     "view": "github:kildevaeld/view#development"
-  }
+  },
+  "typings": "./lib/index.d.ts"
 }

@@ -2,6 +2,7 @@ import { withCollection, ArrayCollection, Model, property, model, collection, wi
 import { BaseView, View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from 'view'
 import { TemplateView } from '../template-view';
 import { EventListener } from 'mixins.events';
+import { IModelView } from '../../lib/index';
 
 
 export class Todo extends Model {
@@ -23,7 +24,7 @@ export interface Todos extends BaseViewOptions<HTMLElement> {
         input: 'input'
     }
 })
-export class TodoListItem extends EventListener<Constructor<TemplateView<Todo>>>(withModel(TemplateView)) {
+export class TodoListItem extends EventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withModel(TemplateView)) {
     edit: boolean = false;
     ui: { input: HTMLInputElement }
     template = (model: Todo) => this.edit ?
