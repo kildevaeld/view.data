@@ -9,7 +9,7 @@ export interface ICollectionView<TCollection extends ICollection<TModel>, TModel
     collectionEvents?: any;
 }
 
-export type ChildViewType<M extends IModel> = IModelView<M> & IView //IViewElement & BaseView<E>
+export type ChildViewType<M extends IModel> = IModelView<M> & IView
 
 export interface CollectionViewOptions<T extends Element, U extends ChildViewType<IModel>> extends BaseViewOptions<T> {
     childViewContainer?: string;

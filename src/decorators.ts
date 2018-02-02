@@ -35,11 +35,8 @@ export function property<T extends IModel, U>(target: T, prop: any, descriptor?:
         }
         Object.defineProperty(target, prop, descriptor);
     } else if (descriptor.set) {
-        let oSet = descriptor.set;
-
         descriptor.set = function $observableSet(this: IModel, value: U) {
             return this.set(prop, value);
-
         }
     }
 }

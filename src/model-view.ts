@@ -59,13 +59,11 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
         }
 
         private _delegateModelEvents(model: M) {
-            if (!this.modelEvents || !this.model || !isEventEmitter(this.model)) {
+            if (!this.modelEvents || !model || !isEventEmitter(model)) {
                 return;
             }
 
             for (let key in this.modelEvents) {
-                const model = this.model;
-
                 this.modelEvents[key].forEach(m => {
                     if (isString(m)) {
                         if (isFunction((this as any)[m])) {
