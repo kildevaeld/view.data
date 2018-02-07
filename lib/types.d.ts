@@ -6,7 +6,7 @@ export interface IModel {
     toJSON(): any;
 }
 export declare namespace MetaKeys {
-    const Attributes: symbol;
+    const Attributes: unique symbol;
 }
 export interface Destroyable {
     destroy(): void;
