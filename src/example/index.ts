@@ -5,7 +5,7 @@ import { EventListener } from 'mixins.events';
 import { IModelView } from '../../lib/index';
 
 
-export class Todo extends Model {
+class Todo extends Model {
     @property
     name: string;
     constructor(name: string) {
@@ -14,7 +14,7 @@ export class Todo extends Model {
     }
 }
 
-export interface Todos extends BaseViewOptions<HTMLElement> {
+interface Todos extends BaseViewOptions<HTMLElement> {
     todos: ArrayCollection<Todo>;
 }
 
@@ -24,7 +24,7 @@ export interface Todos extends BaseViewOptions<HTMLElement> {
         input: 'input'
     }
 })
-export class TodoListItem extends EventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withModel(TemplateView)) {
+class TodoListItem extends EventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withModel(TemplateView)) {
     edit: boolean = false;
     ui: { input: HTMLInputElement }
     template = (model: Todo) => this.edit ?
@@ -54,11 +54,11 @@ export class TodoListItem extends EventListener<Constructor<TemplateView<Todo> &
 }
 
 
-export class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ArrayCollection<Todo>>(View, TodoListItem, ArrayCollection) {
+class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ArrayCollection<Todo>>(View, TodoListItem, ArrayCollection) {
 
 }
 
-export class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(withAttachedViews(View))) {
+class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(withAttachedViews(View))) {
     template = () => `
         <h1>Todos</h1>
         <button class="create-btn">Create</button>
@@ -77,7 +77,8 @@ export class Page extends withAttachedViews(withTemplate<Constructor<View>, Todo
 }
 
 
-new Page({
+const p = new Page({
     el: document.querySelector('#main') as HTMLElement
-}).render();
+})
 
+p.render();

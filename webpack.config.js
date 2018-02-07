@@ -4,13 +4,7 @@ const webpack = require('webpack');
 
 const babelOptions = {
     "presets": [
-        [
-            "es2015",
-            {
-                "modules": false
-            }
-        ],
-        "es2016"
+        "env"
     ]
 };
 
@@ -24,10 +18,10 @@ module.exports = {
         }
     },
     output: {
-        filename: 'view.js',
-        path: Path.join(process.cwd(), 'dist'),
-        library: 'view',
-        libraryTarget: 'umd'
+        filename: 'example.js',
+        path: Path.join(process.cwd(), 'example'),
+        //library: 'view',
+        //libraryTarget: 'umd'
     },
     /*externals: {
         "slick-di": "slick-di"
@@ -51,7 +45,7 @@ module.exports = {
             ]
         }, {
             test: /\.js$/,
-            //exclude: /node_modules/,
+            exclude: /node_modules/,
             use: [{
                 loader: 'babel-loader',
                 options: babelOptions
