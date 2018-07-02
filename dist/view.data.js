@@ -149,8 +149,8 @@
 
         this[exports.MetaKeys.Attributes].set(key, value);
         if (options && options.silent) return this;
-        view.triggerMethodOn(this, "change:".concat(key), old, value);
-        view.triggerMethodOn(this, 'change', _defineProperty({}, key, value));
+        utils.triggerMethodOn(this, "change:".concat(key), old, value);
+        utils.triggerMethodOn(this, 'change', _defineProperty({}, key, value));
         return this;
       }
     }, {
@@ -167,7 +167,7 @@
       key: "clear",
       value: function clear() {
         this[exports.MetaKeys.Attributes] = new Map();
-        view.triggerMethodOn(this, 'clear');
+        utils.triggerMethodOn(this, 'clear');
         return this;
       }
     }, {
@@ -648,7 +648,7 @@
                 args[_key2 - 1] = arguments[_key2];
               }
 
-              view.triggerMethodOn.apply(void 0, [_this2, eventName].concat(_toConsumableArray([view$$1].concat(args))));
+              utils.triggerMethodOn.apply(void 0, [_this2, eventName].concat(_toConsumableArray([view$$1].concat(args))));
             };
 
             view$$1.on('*', fn);
@@ -695,7 +695,7 @@
         _createClass(_class, [{
           key: "setModel",
           value: function setModel(model) {
-            view.triggerMethodOn(this, 'before:set:model');
+            utils.triggerMethodOn(this, 'before:set:model');
 
             if (this._model) {
               this._undelegateModelEvents(this._model);
@@ -703,7 +703,7 @@
 
             this._model = model;
             if (model) this._delegateModelEvents(model);
-            view.triggerMethodOn(this, 'set:model');
+            utils.triggerMethodOn(this, 'set:model');
             return this;
           }
         }, {

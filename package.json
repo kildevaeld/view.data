@@ -29,13 +29,12 @@
     "ts-loader": "^3.5.0",
     "typescript": "^2.7.1",
     "webpack": "^3.10.0",
-     "babel-plugin-external-helpers": "^6.22.0"
+    "babel-plugin-external-helpers": "^6.22.0"
   },
   "dependencies": {
     "@viewjs/events": "^1.0.0",
     "@viewjs/utils": "^1.0.0",
-    "@viewjs/view": "^2.2.3"
-   
+    "@viewjs/view": "^2.4.0"
   },
   "typings": "./lib/index.d.ts"
 }
