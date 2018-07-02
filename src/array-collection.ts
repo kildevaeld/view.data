@@ -40,9 +40,10 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      *
      * @memberof ArrayCollection
      */
-    push(m: T) {
+    push(m: T, trigger = true) {
         this.a.push(m);
-        this.trigger(ModelEvents.Add, m, this.a.length - 1);
+        if (trigger)
+            this.trigger(ModelEvents.Add, m, this.a.length - 1);
         return this.length;
     }
 

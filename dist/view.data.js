@@ -349,8 +349,9 @@ function (_EventEmitter) {
   }, {
     key: "push",
     value: function push(m) {
+      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       this.a.push(m);
-      this.trigger(exports.ModelEvents.Add, m, this.a.length - 1);
+      if (trigger) this.trigger(exports.ModelEvents.Add, m, this.a.length - 1);
       return this.length;
     }
     /**

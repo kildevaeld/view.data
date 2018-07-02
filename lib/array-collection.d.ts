@@ -28,7 +28,7 @@ export declare class ArrayCollection<T> extends EventEmitter implements ICollect
      *
      * @memberof ArrayCollection
      */
-    push(m: T): number;
+    push(m: T, trigger?: boolean): number;
     /**
      * Pop a item from the array and optinally trigger a change event
      *
