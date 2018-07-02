@@ -9,3 +9,4 @@ export declare class TemplateView<M = any> extends TemplateView_base implements 
     constructor(options?: TemplateViewOptions<M>);
     getTemplateData(): any;
 }
+export {};
