@@ -1,5 +1,5 @@
 import { ICollection } from './types';
-import { EventEmitter } from './event-emitter';
+import { EventEmitter } from '@viewjs/events';
 export declare class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
     private a;
     constructor(a?: Array<T>);

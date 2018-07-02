@@ -2,7 +2,7 @@ import { withCollection, ArrayCollection, Model, property, model, withModel } fr
 import { BaseView, View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from '@viewjs/view'
 import { TemplateView } from '../template-view';
 import { withEventListener } from '@viewjs/events';
-import { IModelView } from '../../lib/index';
+import { IModelView } from '../model-view';
 
 
 class Todo extends Model {

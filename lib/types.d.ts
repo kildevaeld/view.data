@@ -15,7 +15,7 @@ export declare function isDestroyable(a: any): a is Destroyable;
 export interface ICollection<T> {
     length: number;
     item(index: number): T | undefined;
-    push(...items: T[]): number;
+    push(items: T): number;
     pop(): T | undefined;
 }
 export declare namespace ModelEvents {
