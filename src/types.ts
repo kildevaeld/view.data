@@ -1,4 +1,5 @@
-import { isFunction } from 'view';
+import { isFunction } from '@viewjs/utils';
+
 export interface IModel {
     set<U>(key: PropertyKey, value: U, options?: any): this;
     get<U>(key: PropertyKey): U;
@@ -22,7 +23,7 @@ export function isDestroyable(a: any): a is Destroyable {
 export interface ICollection<T> {
     length: number;
     item(index: number): T | undefined;
-    push(...items: T[]): number;
+    push(items: T): number;
     pop(): T | undefined;
     //indexOf(item: T): number;
 }

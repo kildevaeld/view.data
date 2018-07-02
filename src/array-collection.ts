@@ -1,6 +1,6 @@
 import { ICollection, ModelEvents, isDestroyable } from './types';
-import { EventEmitter } from './event-emitter';
-import { equal } from 'equaljs';
+import { EventEmitter } from '@viewjs/events';
+import { equal } from '@viewjs/utils';
 
 
 export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
@@ -40,7 +40,7 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      *
      * @memberof ArrayCollection
      */
-    push(m: T, trigger = true) {
+    push(m: T, trigger = true): number {
         this.a.push(m);
         if (trigger)
             this.trigger(ModelEvents.Add, m, this.a.length - 1);

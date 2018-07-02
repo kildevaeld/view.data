@@ -1,4 +1,4 @@
-import { View, Constructor } from 'view';
+import { View, Constructor } from '@viewjs/view';
 import { IModel } from './types';
 export interface IModelView<M extends IModel> {
     model?: M;

@@ -5,4 +5,4 @@ export * from './collection-view';
 export * from './types';
 export * from './model-view';
 export * from './template-view';
-export * from './event-emitter';
+//export * from './event-emitter';

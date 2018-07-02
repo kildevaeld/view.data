@@ -1,6 +1,7 @@
-import { View, Constructor, triggerMethodOn, isString, isFunction } from 'view';
+import { View, Constructor } from '@viewjs/view';
+import { isString, isFunction, triggerMethodOn } from '@viewjs/utils';
 import { IModel } from './types';
-import { isEventEmitter } from 'mixins.events'
+import { isEventEmitter } from '@viewjs/events'
 
 export interface IModelView<M extends IModel> {
     model?: M;

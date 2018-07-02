@@ -5,7 +5,8 @@ const webpack = require('webpack');
 const babelOptions = {
     "presets": [
         "env"
-    ]
+    ],
+    babelrc: false
 };
 
 module.exports = {
@@ -28,29 +29,31 @@ module.exports = {
     },*/
     module: {
         rules: [{
-            test: /\.ts(x?)$/,
-            exclude: /node_modules/,
-            use: [{
-                    loader: 'babel-loader',
-                    options: babelOptions
-                },
-                {
-                    loader: 'ts-loader',
-                    options: {
-                        compilerOptions: {
-                            declaration: false
+                test: /\.ts(x?)$/,
+                exclude: /node_modules/,
+                use: [{
+                        loader: 'babel-loader',
+                        options: babelOptions
+                    },
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            compilerOptions: {
+                                declaration: false
+                            }
                         }
                     }
-                }
-            ]
-        }, {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'babel-loader',
-                options: babelOptions
-            }]
-        }]
+                ]
+            }
+            /*, {
+                        test: /\.js$/,
+                        exclude: /node_modules/,
+                        use: [{
+                            loader: 'babel-loader',
+                            options: babelOptions
+                        }]
+                    }*/
+        ]
     },
     node: {
         console: false,

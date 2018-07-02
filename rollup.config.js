@@ -12,13 +12,13 @@ module.exports = [
         output: {
             file: pkg.browser,
             format: 'umd',
-            name: 'view.data'
+            name: 'viewjs.data'
         },
-        external: ["view", "mixins.events", "equaljs"],
+        external: ["@viewjs/view", "@viewjs/events", "@viewjs/utils"],
         globals: {
-            'mixins.events': 'mixins.events',
-            'view': 'view',
-            'equaljs': 'equaljs'
+            '@viewjs/events': 'viewjs.events',
+            '@viewjs/view': 'viewjs.view',
+            '@viewjs/utils': 'viewjs.utils'
         },
         plugins: [
             typescript({

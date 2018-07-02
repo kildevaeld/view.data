@@ -1,7 +1,7 @@
-import { withCollection, ArrayCollection, Model, property, model, collection, withModel } from '../index';
-import { BaseView, View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from 'view'
+import { withCollection, ArrayCollection, Model, property, model, withModel } from '../index';
+import { BaseView, View, withAttachedViews, withTemplate, attach, Constructor, event, BaseViewOptions, attributes } from '@viewjs/view'
 import { TemplateView } from '../template-view';
-import { EventListener } from 'mixins.events';
+import { withEventListener } from '@viewjs/events';
 import { IModelView } from '../../lib/index';
 
 
@@ -24,7 +24,7 @@ interface Todos extends BaseViewOptions<HTMLElement> {
         input: 'input'
     }
 })
-class TodoListItem extends EventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withModel(TemplateView)) {
+class TodoListItem extends withEventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withModel(TemplateView)) {
     edit: boolean = false;
     ui: { input: HTMLInputElement }
     template = (model: Todo) => this.edit ?
@@ -37,6 +37,7 @@ class TodoListItem extends EventListener<Constructor<TemplateView<Todo> & IModel
     onNameChange() {
         this.render();
     }
+
 
 
     @event.click('button')

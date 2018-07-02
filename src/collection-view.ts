@@ -1,6 +1,7 @@
-import { Constructor, BaseView, View, BaseViewOptions, Invoker, triggerMethodOn, IView } from 'view';
+import { Constructor, BaseView, View, BaseViewOptions, Invoker, IView } from '@viewjs/view';
 import { IModel, ICollection, ModelEvents } from './types';
-import { isEventEmitter, IEventEmitter } from 'mixins.events';
+import { triggerMethodOn } from '@viewjs/utils';
+import { isEventEmitter, IEventEmitter } from '@viewjs/events';
 import { IModelView } from './model-view';
 
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {

@@ -1,7 +1,7 @@
 import { IModel, ICollection } from './types';
 import { IModelView } from './model-view';
 import { ICollectionView, ChildViewType } from './collection-view';
-import { has, extend } from 'view';
+import { has, extend } from '@viewjs/utils';
 
 function setter<T extends IModel, U>(_: T, prop: PropertyKey) {
     return function $observableSetter(this: T, value: U) {

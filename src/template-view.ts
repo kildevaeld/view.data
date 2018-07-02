@@ -1,5 +1,5 @@
-import { View, withTemplate, withElement, Constructor, IViewElement, BaseViewOptions, isFunction, result, IViewTemplate } from 'view';
-
+import { View, withTemplate, withElement, Constructor, IViewElement, BaseViewOptions, IViewTemplate } from '@viewjs/view';
+import { isFunction, result } from '@viewjs/utils'
 
 export interface TemplateViewOptions<M> extends BaseViewOptions<HTMLElement> {
     template?: string | ((data: M) => string)

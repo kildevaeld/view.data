@@ -28,12 +28,14 @@
     "rollup-plugin-typescript": "^0.8.1",
     "ts-loader": "^3.5.0",
     "typescript": "^2.7.1",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+     "babel-plugin-external-helpers": "^6.22.0"
   },
   "dependencies": {
-    "equaljs": "github:kildevaeld/equaljs",
-    "mixins.events": "github:kildevaeld/mixins.events",
-    "view": "github:kildevaeld/view#development"
+    "@viewjs/events": "^1.0.0",
+    "@viewjs/utils": "^1.0.0",
+    "@viewjs/view": "^2.2.3"
+   
   },
   "typings": "./lib/index.d.ts"
 }
