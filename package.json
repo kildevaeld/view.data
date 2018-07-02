@@ -7,8 +7,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "email": "rasmuskildevaed@gmail.com",
+    "name": "Rasmus Kildevæld"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.39",
     "@types/debug": "0.0.29",
