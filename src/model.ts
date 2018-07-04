@@ -9,11 +9,31 @@ export interface ModelSetOptions {
 export class Model extends EventEmitter implements IModel {
 
     [key: string]: any;
+    private _idAttribute: string | undefined = void 0;
 
+    get idAttribute() {
+        if (!this._idAttribute) {
+            this._idAttribute = Reflect.getOwnMetadata("primaryKey", this.constructor) || 'id';
+        }
+        return this._idAttribute;
+    }
 
-    constructor() {
+    set idAttribute(attr: string) {
+        this._idAttribute = attr;
+    }
+
+    get id() {
+        return this.get(this.idAttribute)
+    }
+
+    constructor(attrs?: any) {
         super();
-        (this as any)[MetaKeys.Attributes] = new Map<PropertyKey, any>();
+        (this as any)[MetaKeys.Attributes] = new Map<string | number, any>();
+        if (attrs) {
+            for (let k in attrs) {
+                this.set(k, attrs[k], { silent: true });
+            }
+        }
     }
 
     set<U>(key: string | number, value: U, options?: ModelSetOptions) {
@@ -31,12 +51,18 @@ export class Model extends EventEmitter implements IModel {
         return this;
     }
 
-    get<U>(key: string | number): U {
+    get<U>(key: string | number): U | undefined {
         return (this as any)[MetaKeys.Attributes].get(key);
     }
 
     has(key: string | number): boolean {
         return (this as any)[MetaKeys.Attributes].has(key);
+    }
+
+    unset<U>(key: string | number): U | undefined {
+        let t = this.get<U>(key);
+        (this as any)[MetaKeys.Attributes].delete(key);
+        return t;
     }
 
     clear() {
@@ -45,7 +71,7 @@ export class Model extends EventEmitter implements IModel {
         return this;
     }
 
-    toJSON(_ = false) {
+    toJSON() {
         let out: any = {};
 
         (this as any)[MetaKeys.Attributes].forEach((value: any, key: any) => {

@@ -1,6 +1,6 @@
 {
   "name": "@viewjs/data",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "./lib/index.js",
   "browser": "./dist/view.data.js",
@@ -40,7 +40,8 @@
   "dependencies": {
     "@viewjs/events": "^1.0.0",
     "@viewjs/utils": "^1.0.0",
-    "@viewjs/view": "^2.5.0"
+    "@viewjs/view": "^2.5.2",
+    "reflect-metadata": "^0.1.12"
   },
   "typings": "./lib/index.d.ts"
 }

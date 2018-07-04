@@ -2,14 +2,16 @@ import { IModel, ICollection } from './types';
 import { IModelView } from './model-view';
 import { ICollectionView, ChildViewType } from './collection-view';
 import { has, extend } from '@viewjs/utils';
+import { Constructor } from '@viewjs/view';
+import 'reflect-metadata';
 
-function setter<T extends IModel, U>(_: T, prop: PropertyKey) {
+function setter<T extends IModel, U>(_: T, prop: any) {
     return function $observableSetter(this: T, value: U) {
         return this.set(prop, value)
     }
 }
 
-function getter<T extends IModel, U>(_: T, prop: PropertyKey) {
+function getter<T extends IModel, U>(_: T, prop: any) {
     return function $observableGetter(this: T): U {
         return this.get<U>(prop)
     }
@@ -38,6 +40,12 @@ export function property<T extends IModel, U>(target: T, prop: any, descriptor?:
         descriptor.set = function $observableSet(this: IModel, value: U) {
             return this.set(prop, value);
         }
+    }
+}
+
+export function primaryKey(prop: string) {
+    return function <T extends Constructor<IModel>>(target: T) {
+        Reflect.defineMetadata("primaryKey", prop, target);
     }
 }
 
