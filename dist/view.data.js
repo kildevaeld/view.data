@@ -720,16 +720,20 @@ function withCollection(Base, CView, CCollection) {
   );
 }
 
-function withModel(Base) {
+function withModel(Base, Model) {
   return (
     /*#__PURE__*/
     function (_Base) {
       _inherits(_class, _Base);
 
       function _class() {
+        var _this;
+
         _classCallCheck(this, _class);
 
-        return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+        _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
+        _this.Model = Model;
+        return _this;
       }
 
       _createClass(_class, [{
@@ -749,23 +753,23 @@ function withModel(Base) {
       }, {
         key: "_undelegateModelEvents",
         value: function _undelegateModelEvents(model) {
-          var _this = this;
+          var _this2 = this;
 
           if (!this.modelEvents || !model || !events.isEventEmitter(model)) {
             return;
           }
 
           var _loop = function _loop(key) {
-            _this.modelEvents[key].forEach(function (m) {
+            _this2.modelEvents[key].forEach(function (m) {
               if (utils.isString(m)) {
-                if (utils.isFunction(_this[m])) {
-                  m = _this[m];
+                if (utils.isFunction(_this2[m])) {
+                  m = _this2[m];
                 } else {
                   throw new Error('not a function');
                 }
               }
 
-              model.off(key, m, _this);
+              model.off(key, m, _this2);
             });
           };
 
@@ -776,23 +780,23 @@ function withModel(Base) {
       }, {
         key: "_delegateModelEvents",
         value: function _delegateModelEvents(model) {
-          var _this2 = this;
+          var _this3 = this;
 
           if (!this.modelEvents || !model || !events.isEventEmitter(model)) {
             return;
           }
 
           var _loop2 = function _loop2(key) {
-            _this2.modelEvents[key].forEach(function (m) {
+            _this3.modelEvents[key].forEach(function (m) {
               if (utils.isString(m)) {
-                if (utils.isFunction(_this2[m])) {
-                  m = _this2[m];
+                if (utils.isFunction(_this3[m])) {
+                  m = _this3[m];
                 } else {
                   throw new Error('not a function');
                 }
               }
 
-              model.on(key, m, _this2);
+              model.on(key, m, _this3);
             });
           };
 
@@ -812,6 +816,15 @@ function withModel(Base) {
           this.setModel(model);
         },
         get: function get$$1() {
+          if (!this._model && this.Model) {
+            var model = void 0;
+
+            try {
+              model = view.Invoker.get(this.Model);
+              this.setModel(model);
+            } catch (e) {}
+          }
+
           return this._model;
         }
       }]);
