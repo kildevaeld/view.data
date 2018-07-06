@@ -980,9 +980,9 @@
       key: "onModelChanged",
       value: function onModelChanged() {
         if (this._bounded) {
-          html.setValue(this.element, this.model.get(this.prop));
+          html.setValue(this.element, this.model.get(this.prop) || '');
         } else {
-          this.element.innerText = this.model.get(this.prop);
+          this.element.innerText = this.model.get(this.prop) || '';
         }
       }
     }, {
@@ -1001,7 +1001,7 @@
     return Binding;
   }(events.withEventListener(utils.Base));
 
-  function withBindings(Base, Model) {
+  function withBindings(Base) {
     return (
       /*#__PURE__*/
       function (_Base) {
@@ -1049,11 +1049,9 @@
           value: function _bindModelDom() {
             var _this2 = this;
 
-            if (!this.el || !this.model) return; // if (!this.bindings || !this.bindings.length) {
-            // }
-
-            this.bindings = this._parse();
-            this._bindings = this.bindings.map(function (m) {
+            if (!this.el || !this.model) return;
+            var bindings = (this.bindings || []).concat(this._parse());
+            this._bindings = bindings.map(function (m) {
               var el;
               if (utils.isString(m.selector)) el = _this2.el.querySelector(m.selector);else el = m.selector;
               if (!el) throw ReferenceError("could not find element with selector '".concat(m.selector, "'"));

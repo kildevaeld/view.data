@@ -19,12 +19,7 @@ module.exports = {
     output: {
         filename: 'example.js',
         path: Path.join(process.cwd(), 'example'),
-        //library: 'view',
-        //libraryTarget: 'umd'
     },
-    /*externals: {
-        "slick-di": "slick-di"
-    },*/
     module: {
         rules: [{
             test: /\.ts(x?)$/,

@@ -986,9 +986,9 @@ function (_withEventListener) {
     key: "onModelChanged",
     value: function onModelChanged() {
       if (this._bounded) {
-        setValue(this.element, this.model.get(this.prop));
+        setValue(this.element, this.model.get(this.prop) || '');
       } else {
-        this.element.innerText = this.model.get(this.prop);
+        this.element.innerText = this.model.get(this.prop) || '';
       }
     }
   }, {
@@ -1007,7 +1007,7 @@ function (_withEventListener) {
   return Binding;
 }(withEventListener(Base));
 
-function withBindings(Base$$1, Model) {
+function withBindings(Base$$1) {
   return (
     /*#__PURE__*/
     function (_Base) {
@@ -1055,11 +1055,9 @@ function withBindings(Base$$1, Model) {
         value: function _bindModelDom() {
           var _this2 = this;
 
-          if (!this.el || !this.model) return; // if (!this.bindings || !this.bindings.length) {
-          // }
-
-          this.bindings = this._parse();
-          this._bindings = this.bindings.map(function (m) {
+          if (!this.el || !this.model) return;
+          var bindings = (this.bindings || []).concat(this._parse());
+          this._bindings = bindings.map(function (m) {
             var el;
             if (isString(m.selector)) el = _this2.el.querySelector(m.selector);else el = m.selector;
             if (!el) throw ReferenceError("could not find element with selector '".concat(m.selector, "'"));
