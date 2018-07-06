@@ -1,4 +1,4 @@
-import { withCollection, ArrayCollection, Model, property, withModel } from '../index';
+import { withCollection, ModelCollection, Model, property, withModel, primaryKey } from '../index';
 import { BaseView, View, withAttachedViews, withTemplate, attach, event, BaseViewOptions, attributes } from '@viewjs/view'
 import { TemplateView } from '../template-view';
 import { withEventListener } from '@viewjs/events';
@@ -10,14 +10,10 @@ import { Constructor } from '@viewjs/utils';
 class Todo extends Model {
     @property
     name: string;
-    constructor(name: string) {
-        super();
-        this.name = name;
-    }
 }
 
 interface Todos extends BaseViewOptions<HTMLElement> {
-    todos: ArrayCollection<Todo>;
+    todos: ModelCollection<Todo>;
 }
 
 @attributes({
@@ -56,7 +52,7 @@ class TodoListItem extends withEventListener<Constructor<TemplateView<Todo> & IM
 
 }
 
-class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ArrayCollection<Todo>>(View, TodoListItem, ArrayCollection) {
+class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ModelCollection<Todo>>(View, TodoListItem, ModelCollection, Todo) {
 
 }
 
@@ -74,7 +70,9 @@ class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(View
     @event.click('.create-btn')
     onCreateClick() {
         console.log('click', this);
-        this.list.collection!.push(new Todo("New Todo"));
+        this.list.collection!.push({
+            name: 'New Todo'
+        });
         console.log(this.list)
     }
 }

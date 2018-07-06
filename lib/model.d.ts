@@ -4,9 +4,8 @@ export interface ModelSetOptions {
     silent?: boolean;
 }
 export declare class Model extends EventEmitter implements IModel {
+    static idAttribute: string;
     [key: string]: any;
-    private _idAttribute;
-    idAttribute: string;
     readonly id: {};
     constructor(attrs?: any);
     set<U>(key: string | number, value: U, options?: ModelSetOptions): this;

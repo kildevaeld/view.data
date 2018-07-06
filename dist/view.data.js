@@ -1085,7 +1085,6 @@
   exports.TemplateView = TemplateView;
   exports.ModelCollection = ModelCollection;
   exports.withBindings = withBindings;
-  exports.Binding = Binding;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

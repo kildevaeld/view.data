@@ -1,9 +1,9 @@
 import { ArrayCollection } from './array-collection';
-import { IModel } from './types';
+import { IModel, ModelConstructor } from './types';
 import { Model } from './model';
-import { Constructor } from '@viewjs/utils';
 export declare class ModelCollection<M extends Model> extends ArrayCollection<M> {
-    Model: Constructor<IModel>;
+    Model: ModelConstructor<IModel>;
+    constructor(models?: M[]);
     createModel(o?: {
         [key: string]: any;
     }): IModel;

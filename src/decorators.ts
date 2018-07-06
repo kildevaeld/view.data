@@ -44,7 +44,7 @@ export function property<T extends IModel, U>(target: T, prop: any, descriptor?:
 
 export function primaryKey(prop: string) {
     return function <T extends Constructor<IModel>>(target: T) {
-        Reflect.defineMetadata("primaryKey", prop, target);
+        (target as any).idAttribute = prop;
     }
 }
 

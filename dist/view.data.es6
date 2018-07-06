@@ -1081,4 +1081,4 @@ function withBindings(Base$$1) {
   );
 }
 
-export { Model, property, primaryKey, model, collection, ArrayCollection, withCollection, MetaKeys, isDestroyable, ModelEvents, withModel, TemplateView, ModelCollection, withBindings, Binding };
+export { Model, property, primaryKey, model, collection, ArrayCollection, withCollection, MetaKeys, isDestroyable, ModelEvents, withModel, TemplateView, ModelCollection, withBindings };

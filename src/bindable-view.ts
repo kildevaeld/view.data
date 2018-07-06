@@ -18,7 +18,7 @@ export interface BindingDescription {
 const twoWay = ['input', 'textarea', 'select'];
 
 
-export class Binding extends withEventListener(Base) implements IEventListener {
+class Binding extends withEventListener(Base) implements IEventListener {
     private _bounded: string | undefined = void 0;
     constructor(
         public model: IModel,

@@ -1,7 +1,12 @@
 import { isFunction } from '@viewjs/utils';
 
+export interface ModelConstructor<T> {
+    new(a?: any): T
+    readonly idAttribute: string;
+}
 
 export interface IModel {
+    //idAttribute: string;
     set<U>(key: string | number, value: U, options?: any): this;
     get<U>(key: string | number): U;
     has(key: string | number): boolean;

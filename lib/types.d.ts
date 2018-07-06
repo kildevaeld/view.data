@@ -1,3 +1,7 @@
+export interface ModelConstructor<T> {
+    new (a?: any): T;
+    readonly idAttribute: string;
+}
 export interface IModel {
     set<U>(key: string | number, value: U, options?: any): this;
     get<U>(key: string | number): U;

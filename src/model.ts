@@ -7,23 +7,11 @@ export interface ModelSetOptions {
     silent?: boolean;
 }
 export class Model extends EventEmitter implements IModel {
-
+    static idAttribute = "id";
     [key: string]: any;
-    private _idAttribute: string | undefined = void 0;
-
-    get idAttribute() {
-        if (!this._idAttribute) {
-            this._idAttribute = Reflect.getOwnMetadata("primaryKey", this.constructor) || 'id';
-        }
-        return this._idAttribute;
-    }
-
-    set idAttribute(attr: string) {
-        this._idAttribute = attr;
-    }
 
     get id() {
-        return this.get(this.idAttribute)
+        return this.get((this.constructor as any).idAttribute)
     }
 
     constructor(attrs?: any) {

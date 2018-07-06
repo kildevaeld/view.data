@@ -1,8 +1,9 @@
 import { BaseView, View, BaseViewOptions, IView } from '@viewjs/view';
-import { IModel, ICollection, ModelEvents } from './types';
+import { IModel, ICollection, ModelEvents, ModelConstructor } from './types';
 import { triggerMethodOn, Constructor, Invoker } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
 import { IModelView } from './model-view';
+import { ModelCollection } from './model-collection';
 
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {
     collection?: TCollection;
@@ -22,7 +23,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
     TElement extends Element,
     TView extends ChildViewType<TModel>,
     TCollection extends ICollection<TModel>,
-    TModel extends IModel = IModel>(Base: TBaseType, CView: Constructor<TView>, CCollection?: Constructor<TCollection>): TBaseType & Constructor<ICollectionView<TCollection, TModel, TView>> {
+    TModel extends IModel = IModel>(Base: TBaseType, CView: Constructor<TView>, CCollection?: Constructor<TCollection>, MModel?: ModelConstructor<TModel>): TBaseType & Constructor<ICollectionView<TCollection, TModel, TView>> {
 
     return class extends Base {
 
@@ -48,6 +49,9 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
             super(...args);
             this.options.eventProxyName = this.options.eventProxyName || 'childView'
             this.collection = CCollection ? new CCollection() : void 0;
+            if (MModel && this.collection && this.collection instanceof ModelCollection) {
+                this.collection.Model = MModel;
+            }
         }
 
         render() {
