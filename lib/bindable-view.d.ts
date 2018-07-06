@@ -10,7 +10,7 @@ export interface BindingDescription {
     prop: string;
     selector: string | HTMLElement;
 }
-declare const Binding_base: import("../../../../../../Users/rasmus/Development/Javascripts/view.data/node_modules/@viewjs/events/lib/types").Constructor<IEventListener> & typeof Base;
+declare const Binding_base: Constructor<IEventListener> & typeof Base;
 export declare class Binding extends Binding_base implements IEventListener {
     model: IModel;
     prop: string;

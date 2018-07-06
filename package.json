@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@viewjs/events": "^1.1.0",
-    "@viewjs/html": "^1.0.0",
+    "@viewjs/html": "^1.1.0",
     "@viewjs/utils": "^1.4.2",
     "@viewjs/view": "^2.5.2",
     "reflect-metadata": "^0.1.12"
