@@ -15,7 +15,7 @@ module.exports = {
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.ts', '.tsx', '.js'],
     },
-    mode: 'development',
+    mode: 'none',
     output: {
         filename: 'example.js',
         path: Path.join(process.cwd(), 'example'),

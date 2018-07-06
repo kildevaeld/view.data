@@ -1,7 +1,29 @@
-import { isFunction, equal, triggerMethodOn, has, extend, Invoker, isString, result, Base } from '@viewjs/utils';
-import { EventEmitter, isEventEmitter, withEventListener } from '@viewjs/events';
+import { isFunction, equal, triggerMethodOn, has, extend, Invoker, uniqueId, isPlainObject, result, isString, Base, getOption } from '@viewjs/utils';
+import { EventEmitter, withEventListener, isEventEmitter } from '@viewjs/events';
 import { View, withTemplate, withElement } from '@viewjs/view';
 import { setValue, getValue, html } from '@viewjs/html';
+
+var MetaKeys;
+
+(function (MetaKeys) {
+  MetaKeys.Attributes = Symbol("attributes");
+})(MetaKeys || (MetaKeys = {}));
+
+function isDestroyable(a) {
+  return a && isFunction(a.destroy);
+}
+var ModelEvents;
+
+(function (ModelEvents) {
+  ModelEvents.Add = "add";
+  ModelEvents.BeforeRemove = "before:remove";
+  ModelEvents.Remove = "remove";
+  ModelEvents.Clear = "clear";
+  ModelEvents.BeforeSort = "before:sort";
+  ModelEvents.Sort = "sort";
+  ModelEvents.Change = "change";
+  ModelEvents.Reset = "reset";
+})(ModelEvents || (ModelEvents = {}));
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -137,28 +159,6 @@ function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
-var MetaKeys;
-
-(function (MetaKeys) {
-  MetaKeys.Attributes = Symbol("attributes");
-})(MetaKeys || (MetaKeys = {}));
-
-function isDestroyable(a) {
-  return a && isFunction(a.destroy);
-}
-var ModelEvents;
-
-(function (ModelEvents) {
-  ModelEvents.Add = "add";
-  ModelEvents.BeforeRemove = "before:remove";
-  ModelEvents.Remove = "remove";
-  ModelEvents.Clear = "clear";
-  ModelEvents.BeforeSort = "before:sort";
-  ModelEvents.Sort = "sort";
-  ModelEvents.Change = "change";
-  ModelEvents.Reset = "reset";
-})(ModelEvents || (ModelEvents = {}));
-
 var Model =
 /*#__PURE__*/
 function (_EventEmitter) {
@@ -170,7 +170,6 @@ function (_EventEmitter) {
     _classCallCheck(this, Model);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Model).call(this));
-    _this._idAttribute = void 0;
     _this[MetaKeys.Attributes] = new Map();
 
     if (attrs) {
@@ -233,26 +232,16 @@ function (_EventEmitter) {
       return out;
     }
   }, {
-    key: "idAttribute",
-    get: function get() {
-      if (!this._idAttribute) {
-        this._idAttribute = Reflect.getOwnMetadata("primaryKey", this.constructor) || 'id';
-      }
-
-      return this._idAttribute;
-    },
-    set: function set(attr) {
-      this._idAttribute = attr;
-    }
-  }, {
     key: "id",
     get: function get() {
-      return this.get(this.idAttribute);
+      return this.get(this.constructor.idAttribute);
     }
   }]);
 
   return Model;
 }(EventEmitter);
+
+Model.idAttribute = "id";
 
 function setter(_, prop) {
   return function $observableSetter(value) {
@@ -294,7 +283,7 @@ function property(target, prop, descriptor) {
 }
 function primaryKey(prop) {
   return function (target) {
-    Reflect.defineMetadata("primaryKey", prop, target);
+    target.idAttribute = prop;
   };
 }
 
@@ -527,7 +516,268 @@ function (_EventEmitter) {
   return ArrayCollection;
 }(EventEmitter);
 
-function withCollection(Base$$1, CView, CCollection) {
+var ModelCollection =
+/*#__PURE__*/
+function (_ArrayCollection) {
+  _inherits(ModelCollection, _ArrayCollection);
+
+  function ModelCollection(models) {
+    var _this;
+
+    _classCallCheck(this, ModelCollection);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModelCollection).call(this));
+    _this.Model = Model;
+
+    if (Array.isArray(models)) {
+      models.forEach(function (m) {
+        return _this.push(m);
+      });
+    }
+
+    return _this;
+  }
+
+  _createClass(ModelCollection, [{
+    key: "createModel",
+    value: function createModel(o) {
+      var model = Invoker.get(this.Model);
+
+      if (o) {
+        for (var key in o) {
+          model.set(key, o[key]);
+        }
+      }
+
+      if (!model.has(this.Model.idAttribute)) {
+        model.set(this.Model.idAttribute, uniqueId());
+      }
+
+      return model;
+    }
+    /**
+     * Push a model to the collection
+     *
+     * @param {(M | any)} m
+     * @param {boolean} [trigger=true]
+     * @returns {number}
+     * @memberof ModelCollection
+     */
+
+  }, {
+    key: "push",
+    value: function push(m) {
+      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (!(m instanceof this.Model)) {
+        if (!isPlainObject(m)) throw new TypeError("invalid type");
+        m = this.createModel(m);
+      } else if (m instanceof Model && !m.has(this.Model.idAttribute)) {
+        m.set(this.Model.idAttribute, uniqueId());
+      }
+
+      var found = this.find(function (model) {
+        return model.id == m.id;
+      });
+
+      if (found && found !== m) {
+        var json = m.toJSON();
+
+        for (var k in json) {
+          m.set(k, json[k]);
+        }
+
+        return this.length;
+      } else if (found === m) return this.length;
+
+      return _get(_getPrototypeOf(ModelCollection.prototype), "push", this).call(this, m, trigger);
+    }
+  }]);
+
+  return ModelCollection;
+}(ArrayCollection);
+
+var TemplateView =
+/*#__PURE__*/
+function (_withTemplate) {
+  _inherits(TemplateView, _withTemplate);
+
+  function TemplateView() {
+    var _this;
+
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, TemplateView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TemplateView).call(this, options));
+
+    if (options.template) {
+      _this.template = options.template;
+    }
+
+    return _this;
+  }
+
+  _createClass(TemplateView, [{
+    key: "getTemplateData",
+    value: function getTemplateData() {
+      if (this.model && isFunction(this.model.toJSON)) {
+        return this.model.toJSON();
+      }
+
+      return result(this, 'model');
+    }
+  }]);
+
+  return TemplateView;
+}(withTemplate(withElement(View)));
+
+var twoWay = ['input', 'textarea', 'select'],
+    keyupTypes = ['text', 'number', 'email'];
+
+var Binding =
+/*#__PURE__*/
+function (_withEventListener) {
+  _inherits(Binding, _withEventListener);
+
+  function Binding(model, prop, element) {
+    var _this;
+
+    _classCallCheck(this, Binding);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Binding).call(this));
+    _this.model = model;
+    _this.prop = prop;
+    _this.element = element;
+    _this._bounded = void 0;
+    _this._setting = false;
+    if (isEventEmitter(_this.model)) _this.listenTo(_this.model, 'change:' + prop, _this.onModelChanged);
+    _this.onElementChanged = _this.onElementChanged.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    var tagName = element.tagName.toLowerCase();
+
+    if (~twoWay.indexOf(tagName)) {
+      _this._bounded = 'change';
+
+      if (tagName == 'input' && ~keyupTypes.indexOf(element.getAttribute('type')) || tagName == 'textarea') {
+        element.addEventListener('keyup', _this.onElementChanged);
+        _this._bounded = 'keyup';
+      } else element.addEventListener('change', _this.onElementChanged);
+    }
+
+    _this.onModelChanged();
+
+    return _this;
+  }
+
+  _createClass(Binding, [{
+    key: "onModelChanged",
+    value: function onModelChanged() {
+      if (this._setting) return;
+      this._setting = true;
+
+      if (this._bounded) {
+        setValue(this.element, this.model.get(this.prop) || '');
+      } else {
+        this.element.innerText = this.model.get(this.prop) || '';
+      }
+
+      this._setting = false;
+    }
+  }, {
+    key: "onElementChanged",
+    value: function onElementChanged() {
+      if (this._setting) return;
+      this._setting = true;
+      this.model.set(this.prop, getValue(this.element));
+      this._setting = false;
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.stopListening();
+      if (this._bounded && this.element) this.element.removeEventListener(this._bounded, this.onElementChanged);
+    }
+  }]);
+
+  return Binding;
+}(withEventListener(Base));
+
+function withBindings(Base$$1) {
+  return (
+    /*#__PURE__*/
+    function (_Base) {
+      _inherits(_class, _Base);
+
+      function _class() {
+        _classCallCheck(this, _class);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
+      }
+
+      _createClass(_class, [{
+        key: "setModel",
+        value: function setModel(model) {
+          if (this.model) this._unbindModelDom();
+          return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model);
+        }
+      }, {
+        key: "delegateEvents",
+        value: function delegateEvents() {
+          _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this);
+
+          this._bindModelDom();
+        }
+      }, {
+        key: "undelegateEvents",
+        value: function undelegateEvents() {
+          this._unbindModelDom();
+
+          return _get(_getPrototypeOf(_class.prototype), "undelegateEvents", this).call(this);
+        }
+      }, {
+        key: "_unbindModelDom",
+        value: function _unbindModelDom() {
+          if (!this.el || !this.model || !this._bindings) return;
+
+          this._bindings.forEach(function (m) {
+            return m.destroy();
+          });
+
+          this._bindings.length = 0;
+        }
+      }, {
+        key: "_bindModelDom",
+        value: function _bindModelDom() {
+          var _this2 = this;
+
+          if (!this.el || !this.model) return;
+          var bindings = (this.bindings || []).concat(this._parse());
+          this._bindings = bindings.map(function (m) {
+            var el;
+            if (isString(m.selector)) el = _this2.el.querySelector(m.selector);else el = m.selector;
+            if (!el) throw ReferenceError("could not find element with selector '".concat(m.selector, "' in context"));
+            return new Binding(_this2.model, m.prop, el);
+          });
+        }
+      }, {
+        key: "_parse",
+        value: function _parse() {
+          var attr = getOption('bindingAttribute', [this, this.options]) || 'bind';
+          return html(this.el).find("[".concat(attr, "]")).map(function (m) {
+            return {
+              selector: m,
+              prop: m.getAttribute(attr)
+            };
+          });
+        }
+      }]);
+
+      return _class;
+    }(Base$$1)
+  );
+}
+
+function withCollection(Base$$1, CView, CCollection, MModel) {
   return (
     /*#__PURE__*/
     function (_Base) {
@@ -546,10 +796,16 @@ function withCollection(Base$$1, CView, CCollection) {
 
         _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(_class)).call.apply(_getPrototypeOf2, [this].concat(args)));
         _this.ChildView = CView;
-        _this.options.eventProxyName = _this.options.eventProxyName || 'childView';
+        _this.options.eventProxyName = getOption('childView', [_this.options]) || 'childView';
         _this.collection = CCollection ? new CCollection() : void 0;
+
+        if (MModel && _this.collection && _this.collection instanceof ModelCollection) {
+          _this.collection.Model = MModel;
+        }
+
         return _this;
-      }
+      } //readonly options: CollectionViewOptions<TElement, TView>;
+
 
       _createClass(_class, [{
         key: "render",
@@ -647,7 +903,7 @@ function withCollection(Base$$1, CView, CCollection) {
       }, {
         key: "_createChildView",
         value: function _createChildView(model) {
-          var Vi = this.options.childView || this.ChildView || View;
+          var Vi = getOption('ChildView', [this.options, this]) || View;
           var el = Invoker.get(Vi);
           el.model = model;
           el.options.attachId = true;
@@ -704,7 +960,7 @@ function withCollection(Base$$1, CView, CCollection) {
       }, {
         key: "_getChildViewContainer",
         value: function _getChildViewContainer() {
-          var sel = this.options.childViewContainer || this.childViewContainer;
+          var sel = getOption('childViewContainer', [this.options, this]);
           if (!sel) return this.el;
           var el = this.el.querySelector(sel);
           if (!el) throw new Error("tag not found: ".concat(sel));
@@ -716,7 +972,7 @@ function withCollection(Base$$1, CView, CCollection) {
           var _this2 = this;
 
           var fn = function fn(eventName) {
-            eventName = _this2.options.eventProxyName + ':' + eventName;
+            eventName = getOption('eventProxyName', [_this2.options]); //this.options.eventProxyName + ':' + eventName;
 
             for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
               args[_key2 - 1] = arguments[_key2];
@@ -842,14 +1098,15 @@ function withModel(Base$$1, Model) {
         key: "destroy",
         value: function destroy() {
           if (this.model) this._undelegateModelEvents(this.model);
-          return _get(_getPrototypeOf(_class.prototype), "destroy", this).call(this);
+          if (Base$$1.prototype.destroy) Base$$1.prototype.destroy.call(this);
+          return this;
         }
       }, {
         key: "model",
         set: function set(model) {
           this.setModel(model);
         },
-        get: function get$$1() {
+        get: function get() {
           if (!this._model && this.Model) {
             var model = void 0;
 
@@ -868,217 +1125,4 @@ function withModel(Base$$1, Model) {
   );
 }
 
-var TemplateView =
-/*#__PURE__*/
-function (_withTemplate) {
-  _inherits(TemplateView, _withTemplate);
-
-  function TemplateView() {
-    var _this;
-
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, TemplateView);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TemplateView).call(this, options));
-
-    if (options.template) {
-      _this.template = options.template;
-    }
-
-    return _this;
-  }
-
-  _createClass(TemplateView, [{
-    key: "getTemplateData",
-    value: function getTemplateData() {
-      if (this.model && isFunction(this.model.toJSON)) {
-        return this.model.toJSON();
-      }
-
-      return result(this, 'model');
-    }
-  }]);
-
-  return TemplateView;
-}(withTemplate(withElement(View)));
-
-var ModelCollection =
-/*#__PURE__*/
-function (_ArrayCollection) {
-  _inherits(ModelCollection, _ArrayCollection);
-
-  function ModelCollection() {
-    var _this;
-
-    _classCallCheck(this, ModelCollection);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModelCollection).apply(this, arguments));
-    _this.Model = Model;
-    return _this;
-  }
-
-  _createClass(ModelCollection, [{
-    key: "createModel",
-    value: function createModel(o) {
-      var model = Invoker.get(this.Model);
-
-      if (o) {
-        for (var key in o) {
-          model.set(key, o[key]);
-        }
-      }
-
-      return model;
-    }
-  }, {
-    key: "push",
-    value: function push(m) {
-      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-      if (!(m instanceof this.Model)) {
-        m = this.createModel(m);
-      }
-
-      return _get(_getPrototypeOf(ModelCollection.prototype), "push", this).call(this, m, trigger);
-    }
-  }]);
-
-  return ModelCollection;
-}(ArrayCollection);
-
-var twoWay = ['input', 'textarea', 'select'];
-
-var Binding =
-/*#__PURE__*/
-function (_withEventListener) {
-  _inherits(Binding, _withEventListener);
-
-  function Binding(model, prop, element) {
-    var _this;
-
-    _classCallCheck(this, Binding);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Binding).call(this));
-    _this.model = model;
-    _this.prop = prop;
-    _this.element = element;
-    _this._bounded = void 0;
-    if (isEventEmitter(_this.model)) _this.listenTo(_this.model, 'change:' + prop, _this.onModelChanged);
-    _this.onElementChanged = _this.onElementChanged.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    var tagName = element.tagName.toLowerCase();
-
-    if (~twoWay.indexOf(tagName)) {
-      _this._bounded = 'change';
-
-      if (tagName == 'input' || tagName == 'textarea') {
-        element.addEventListener('keyup', _this.onElementChanged);
-        _this._bounded = 'keyup';
-      } else element.addEventListener('change', _this.onElementChanged);
-    }
-
-    _this.onModelChanged();
-
-    return _this;
-  }
-
-  _createClass(Binding, [{
-    key: "onModelChanged",
-    value: function onModelChanged() {
-      if (this._bounded) {
-        setValue(this.element, this.model.get(this.prop) || '');
-      } else {
-        this.element.innerText = this.model.get(this.prop) || '';
-      }
-    }
-  }, {
-    key: "onElementChanged",
-    value: function onElementChanged() {
-      this.model.set(this.prop, getValue(this.element));
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.stopListening();
-      if (this._bounded && this.element) this.element.removeEventListener(this._bounded, this.onElementChanged);
-    }
-  }]);
-
-  return Binding;
-}(withEventListener(Base));
-
-function withBindings(Base$$1) {
-  return (
-    /*#__PURE__*/
-    function (_Base) {
-      _inherits(_class, _Base);
-
-      function _class() {
-        _classCallCheck(this, _class);
-
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
-      }
-
-      _createClass(_class, [{
-        key: "setModel",
-        value: function setModel(model) {
-          if (this.model) this._unbindModelDom();
-          return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model);
-        }
-      }, {
-        key: "delegateEvents",
-        value: function delegateEvents() {
-          _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this);
-
-          this._bindModelDom();
-        }
-      }, {
-        key: "undelegateEvents",
-        value: function undelegateEvents() {
-          this._unbindModelDom();
-
-          return _get(_getPrototypeOf(_class.prototype), "undelegateEvents", this).call(this);
-        }
-      }, {
-        key: "_unbindModelDom",
-        value: function _unbindModelDom() {
-          if (!this.el || !this.model || !this._bindings) return;
-
-          this._bindings.forEach(function (m) {
-            return m.destroy();
-          });
-
-          this._bindings.length = 0;
-        }
-      }, {
-        key: "_bindModelDom",
-        value: function _bindModelDom() {
-          var _this2 = this;
-
-          if (!this.el || !this.model) return;
-          var bindings = (this.bindings || []).concat(this._parse());
-          this._bindings = bindings.map(function (m) {
-            var el;
-            if (isString(m.selector)) el = _this2.el.querySelector(m.selector);else el = m.selector;
-            if (!el) throw ReferenceError("could not find element with selector '".concat(m.selector, "'"));
-            return new Binding(_this2.model, m.prop, el);
-          });
-        }
-      }, {
-        key: "_parse",
-        value: function _parse() {
-          return html(this.el).find('[bind]').map(function (m) {
-            return {
-              selector: m,
-              prop: m.getAttribute('bind')
-            };
-          });
-        }
-      }]);
-
-      return _class;
-    }(Base$$1)
-  );
-}
-
-export { Model, property, primaryKey, model, collection, ArrayCollection, withCollection, MetaKeys, isDestroyable, ModelEvents, withModel, TemplateView, ModelCollection, withBindings };
+export { MetaKeys, isDestroyable, ModelEvents, Model, property, primaryKey, model, collection, ArrayCollection, ModelCollection, TemplateView, withBindings, withCollection, withModel };

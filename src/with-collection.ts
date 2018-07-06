@@ -1,8 +1,8 @@
 import { BaseView, View, BaseViewOptions, IView } from '@viewjs/view';
 import { IModel, ICollection, ModelEvents, ModelConstructor } from './types';
-import { triggerMethodOn, Constructor, Invoker } from '@viewjs/utils';
+import { triggerMethodOn, Constructor, Invoker, getOption } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
-import { IModelView } from './model-view';
+import { IModelController } from './with-model';
 import { ModelCollection } from './model-collection';
 
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {
@@ -11,7 +11,7 @@ export interface ICollectionView<TCollection extends ICollection<TModel>, TModel
     collectionEvents?: any;
 }
 
-export type ChildViewType<M extends IModel> = IModelView<M> & IView
+export type ChildViewType<M extends IModel> = IModelController<M> & IView
 
 export interface CollectionViewOptions<T extends Element, U extends ChildViewType<IModel>> extends BaseViewOptions<T> {
     childViewContainer?: string;
@@ -19,8 +19,8 @@ export interface CollectionViewOptions<T extends Element, U extends ChildViewTyp
     childView?: Constructor<U>
 }
 
-export function withCollection<TBaseType extends Constructor<BaseView<TElement>>,
-    TElement extends Element,
+export function withCollection<
+    TBaseType extends Constructor<BaseView>,
     TView extends ChildViewType<TModel>,
     TCollection extends ICollection<TModel>,
     TModel extends IModel = IModel>(Base: TBaseType, CView: Constructor<TView>, CCollection?: Constructor<TCollection>, MModel?: ModelConstructor<TModel>): TBaseType & Constructor<ICollectionView<TCollection, TModel, TView>> {
@@ -32,7 +32,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
         private _childViews: TView[];
 
         protected childViewContainer?: string;
-        readonly options: CollectionViewOptions<TElement, TView>;
+        //readonly options: CollectionViewOptions<TElement, TView>;
         set collection(collection: TCollection | undefined) {
             this.setCollection(collection);
         }
@@ -47,7 +47,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
 
         constructor(...args: any[]) {
             super(...args);
-            this.options.eventProxyName = this.options.eventProxyName || 'childView'
+            (this.options as any).eventProxyName = getOption('childView', [this.options]) || 'childView'
             this.collection = CCollection ? new CCollection() : void 0;
             if (MModel && this.collection && this.collection instanceof ModelCollection) {
                 this.collection.Model = MModel;
@@ -141,7 +141,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
 
 
         protected _createChildView(model: TModel): TView {
-            let Vi: Constructor<any> = this.options.childView || this.ChildView || (View as any);
+            let Vi: Constructor<TView> = getOption('ChildView', [this.options, this]) || View as any;
 
             let el = Invoker.get<any>(Vi);
             el.model = model;
@@ -188,7 +188,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
         }
 
         private _getChildViewContainer() {
-            let sel = this.options.childViewContainer || this.childViewContainer
+            let sel = getOption<string>('childViewContainer', [this.options, this]);
             if (!sel) return this.el!;
             let el = this.el!.querySelector(sel);
             if (!el) throw new Error(`tag not found: ${sel}`);
@@ -197,7 +197,7 @@ export function withCollection<TBaseType extends Constructor<BaseView<TElement>>
 
         private _proxyChildViewEvents(view: IEventEmitter) {
             const fn = (eventName: string, ...args: any[]) => {
-                eventName = this.options.eventProxyName + ':' + eventName;
+                eventName = getOption<string>('eventProxyName', [this.options]); //this.options.eventProxyName + ':' + eventName;
                 triggerMethodOn(this, eventName, ...[view].concat(args));
             }
 

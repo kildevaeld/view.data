@@ -1,6 +1,6 @@
 import { IModel, ICollection } from './types';
-import { IModelView } from './model-view';
-import { ICollectionView, ChildViewType } from './collection-view';
+import { IModelController } from './with-model';
+import { ICollectionView, ChildViewType } from './with-collection';
 import { has, extend, Constructor } from '@viewjs/utils';
 
 function setter<T extends IModel, U>(_: T, prop: any) {
@@ -72,7 +72,7 @@ function _event<T extends any>(event: string, property: string | undefined, targ
 export namespace model {
 
     export function event(event: string, property?: string) {
-        return function <T extends IModelView<M>, M extends IModel>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
+        return function <T extends IModelController<M>, M extends IModel>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
             return _event(event, property, target, prop, desc, "modelEvents");
         }
     }

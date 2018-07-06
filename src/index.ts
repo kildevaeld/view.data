@@ -1,10 +1,9 @@
-
+export * from './types';
 export * from './model';
 export * from './decorators';
 export * from './array-collection';
-export * from './collection-view';
-export * from './types';
-export * from './model-view';
-export * from './template-view';
 export * from './model-collection';
-export * from './bindable-view';
+export * from './template-view';
+export * from './with-bindings';
+export * from './with-collection';
+export * from './with-model';

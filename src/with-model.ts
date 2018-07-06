@@ -1,9 +1,8 @@
-import { View } from '@viewjs/view';
-import { isString, isFunction, triggerMethodOn, Constructor, Invoker } from '@viewjs/utils';
+import { isString, isFunction, triggerMethodOn, Constructor, Invoker, Base } from '@viewjs/utils';
 import { IModel } from './types';
 import { isEventEmitter } from '@viewjs/events'
 
-export interface IModelView<M extends IModel> {
+export interface IModelController<M extends IModel> {
     model?: M;
     setModel(model?: M): this;
     modelEvents?: ModelEventsMap;
@@ -13,8 +12,7 @@ export type ModelEventsMap = {
     [key: string]: (string | ((...args: any[]) => any))[];
 }
 
-
-export function withModel<T extends Constructor<View>, M extends IModel>(Base: T, Model?: Constructor<M>): T & Constructor<IModelView<M>> {
+export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, Model?: Constructor<M>): T & Constructor<IModelController<M>> {
     return class extends Base {
         Model = Model;
         private _model: M | undefined;
@@ -94,7 +92,9 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
         destroy() {
             if (this.model)
                 this._undelegateModelEvents(this.model);
-            return super.destroy();
+            if (Base.prototype.destroy)
+                Base.prototype.destroy.call(this);
+            return this;
         }
 
     }

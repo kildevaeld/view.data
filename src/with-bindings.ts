@@ -1,9 +1,9 @@
 import { BaseView } from '@viewjs/view';
 import { withEventListener, IEventListener, isEventEmitter } from '@viewjs/events';
 import { IModel } from './types';
-import { IModelView } from './model-view';
+import { IModelController } from './with-model';
 import { setValue, getValue, html } from '@viewjs/html';
-import { isString, Constructor, Base } from '@viewjs/utils';
+import { isString, Constructor, Base, getOption } from '@viewjs/utils';
 
 
 export interface IBindableView {
@@ -15,11 +15,13 @@ export interface BindingDescription {
     selector: string | HTMLElement;
 }
 
-const twoWay = ['input', 'textarea', 'select'];
+const twoWay = ['input', 'textarea', 'select'],
+    keyupTypes = ['text', 'number', 'email']
 
 
 class Binding extends withEventListener(Base) implements IEventListener {
     private _bounded: string | undefined = void 0;
+    private _setting = false;
     constructor(
         public model: IModel,
         public prop: string,
@@ -34,29 +36,33 @@ class Binding extends withEventListener(Base) implements IEventListener {
         let tagName = element.tagName.toLowerCase();
         if (~twoWay.indexOf(tagName)) {
             this._bounded = 'change';
-            if (tagName == 'input' || tagName == 'textarea') {
+            if ((tagName == 'input' && ~keyupTypes.indexOf(element.getAttribute('type'))) || tagName == 'textarea') {
                 element.addEventListener('keyup', this.onElementChanged);
                 this._bounded = 'keyup';
             } else
                 element.addEventListener('change', this.onElementChanged);
-
         }
+
         this.onModelChanged();
     }
 
 
     onModelChanged() {
-
+        if (this._setting) return;
+        this._setting = true;
         if (this._bounded) {
             setValue(this.element, this.model.get(this.prop) || '');
         } else {
             this.element.innerText = this.model.get(this.prop) || '';
         }
-
+        this._setting = false;
     }
 
     onElementChanged() {
+        if (this._setting) return;
+        this._setting = true;
         this.model.set(this.prop, getValue(this.element));
+        this._setting = false;
     }
 
     destroy() {
@@ -67,7 +73,11 @@ class Binding extends withEventListener(Base) implements IEventListener {
 
 }
 
-export function withBindings<T extends Constructor<BaseView> & Constructor<IModelView<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
+export interface BindingViewOptions {
+    bindingAttribute?: string;
+}
+
+export function withBindings<T extends Constructor<BaseView> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
     return class extends Base {
         bindings: BindingDescription[];
 
@@ -105,16 +115,17 @@ export function withBindings<T extends Constructor<BaseView> & Constructor<IMode
                     el = this.el.querySelector(m.selector);
                 else
                     el = m.selector;
-                if (!el) throw ReferenceError(`could not find element with selector '${m.selector}'`);
+                if (!el) throw ReferenceError(`could not find element with selector '${m.selector}' in context`);
                 return new Binding(this.model, m.prop, el);
             });
         }
 
         private _parse() {
-            return html(this.el).find('[bind]').map(m => {
+            const attr = getOption<string>('bindingAttribute', [this, this.options]) || 'bind'
+            return html(this.el).find(`[${attr}]`).map(m => {
                 return {
                     selector: m,
-                    prop: m.getAttribute('bind')
+                    prop: m.getAttribute(attr)
                 };
             });
         }

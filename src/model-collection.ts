@@ -1,11 +1,10 @@
 import { ArrayCollection } from './array-collection';
-import { IModel, ModelConstructor } from './types';
+import { ModelConstructor } from './types';
 import { Model } from './model';
 import { Invoker, uniqueId, isPlainObject } from '@viewjs/utils';
 
 export class ModelCollection<M extends Model> extends ArrayCollection<M> {
-	Model: ModelConstructor<IModel> = Model;
-
+	Model: ModelConstructor<M> = Model as any;
 
 	constructor(models?: M[]) {
 		super();
@@ -13,6 +12,7 @@ export class ModelCollection<M extends Model> extends ArrayCollection<M> {
 			models.forEach(m => this.push(m));
 		}
 	}
+
 
 	createModel(o?: { [key: string]: any }) {
 		const model = Invoker.get(this.Model);
@@ -29,6 +29,14 @@ export class ModelCollection<M extends Model> extends ArrayCollection<M> {
 		return model;
 	}
 
+	/**
+	 * Push a model to the collection
+	 *
+	 * @param {(M | any)} m
+	 * @param {boolean} [trigger=true]
+	 * @returns {number}
+	 * @memberof ModelCollection
+	 */
 	push(m: M | any, trigger = true): number {
 		if (!(m instanceof this.Model)) {
 			if (!isPlainObject(m)) throw new TypeError("invalid type");

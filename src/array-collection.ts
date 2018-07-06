@@ -132,6 +132,7 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
         this.a = [];
     }
 
+
     /**
      * Returns a copy of the array
      *

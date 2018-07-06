@@ -1,10 +1,8 @@
-import { withCollection, ModelCollection, Model, property, withModel, primaryKey } from '../index';
-import { BaseView, View, withAttachedViews, withTemplate, attach, event, BaseViewOptions, attributes } from '@viewjs/view'
+import { withCollection, ModelCollection, Model, property, withModel } from '..';
+import { View, withAttachedViews, withTemplate, attach, event, attributes } from '@viewjs/view';
 import { TemplateView } from '../template-view';
 import { withEventListener } from '@viewjs/events';
-import { IModelView } from '../model-view';
-import { withBindings } from '../bindable-view';
-import { Constructor } from '@viewjs/utils';
+import { withBindings } from '../with-bindings';
 
 
 class Todo extends Model {
@@ -12,7 +10,8 @@ class Todo extends Model {
     name: string;
 }
 
-interface Todos extends BaseViewOptions<HTMLElement> {
+class Todos extends ModelCollection<Todo> {
+    Model = Todo;
     todos: ModelCollection<Todo>;
 }
 
@@ -25,12 +24,8 @@ interface Todos extends BaseViewOptions<HTMLElement> {
         '@input': 'name'
     }
 })
-class TodoListItem extends withEventListener<Constructor<TemplateView<Todo> & IModelView<Todo>>>(withBindings(withModel(TemplateView))) {
+class TodoListItem extends withEventListener(withBindings(withModel(TemplateView))) {
     edit: boolean = false;
-    // bindings = [{
-    //     prop: 'name',
-    //     selector: 'input'
-    // }]
     ui: { input: HTMLInputElement }
     template = _ => this.edit ?
         `<input type="text" bind="name"><button>done</button>`
@@ -47,16 +42,16 @@ class TodoListItem extends withEventListener<Constructor<TemplateView<Todo> & IM
     @event.click('h5')
     onClick() {
         this.edit = true
-        this.render();
+        this.render().ui.input.focus();
     }
 
 }
 
-class TodoList extends withCollection<Constructor<BaseView>, HTMLElement, TodoListItem, ModelCollection<Todo>>(View, TodoListItem, ModelCollection, Todo) {
+class TodoList extends withCollection(View, TodoListItem, Todos, Todo) {
 
 }
 
-class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(View)) {
+class Page extends withAttachedViews(withTemplate(View)) {
     template = () => `
         <h1>Todos</h1>
         <button class="create-btn">Create</button>
@@ -73,14 +68,12 @@ class Page extends withAttachedViews(withTemplate<Constructor<View>, Todos>(View
         this.list.collection!.push({
             name: 'New Todo'
         });
-        console.log(this.list)
+
     }
 }
 
 
-const p = new Page({
-    el: document.querySelector('#main') as HTMLElement
-})
+new Page({
+    el: document.querySelector('#main') as HTMLElement,
+}).render();
 
-
-p.render();
