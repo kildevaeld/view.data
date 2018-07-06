@@ -958,9 +958,7 @@
       _this.prop = prop;
       _this.element = element;
       _this._bounded = void 0;
-
-      _this.listenTo(_this.model, 'change:' + prop, _this.onModelChanged);
-
+      if (events.isEventEmitter(_this.model)) _this.listenTo(_this.model, 'change:' + prop, _this.onModelChanged);
       _this.onElementChanged = _this.onElementChanged.bind(_assertThisInitialized(_assertThisInitialized(_this)));
       var tagName = element.tagName.toLowerCase();
 

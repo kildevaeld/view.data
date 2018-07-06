@@ -36,11 +36,9 @@ class TodoListItem extends withEventListener<Constructor<TemplateView<Todo> & IM
     //     selector: 'input'
     // }]
     ui: { input: HTMLInputElement }
-    template = (model: Todo) => this.edit ?
+    template = _ => this.edit ?
         `<input type="text" bind="name"><button>done</button>`
-        : `
-            <h5 bind="name"></h5>
-        `;
+        : `<h5 bind="name"></h5>`;
 
 
     @event.click('button')

@@ -1,11 +1,12 @@
 import { BaseView } from '@viewjs/view';
-import { withEventListener, IEventListener } from '@viewjs/events';
-import { Model } from './model';
+import { withEventListener, IEventListener, isEventEmitter } from '@viewjs/events';
+import { IModel } from './types';
 import { IModelView } from './model-view';
 import { setValue, getValue, html } from '@viewjs/html';
 import { isString, Constructor, Base } from '@viewjs/utils';
 
-export interface IBindableView<M extends Model> {
+
+export interface IBindableView {
     bindings: BindingDescription[];
 }
 
@@ -20,12 +21,15 @@ const twoWay = ['input', 'textarea', 'select'];
 export class Binding extends withEventListener(Base) implements IEventListener {
     private _bounded: string | undefined = void 0;
     constructor(
-        public model: Model,
+        public model: IModel,
         public prop: string,
         public element: HTMLElement
     ) {
         super();
-        this.listenTo(this.model, 'change:' + prop, this.onModelChanged);
+
+        if (isEventEmitter(this.model))
+            this.listenTo(this.model, 'change:' + prop, this.onModelChanged);
+
         this.onElementChanged = this.onElementChanged.bind(this);
         let tagName = element.tagName.toLowerCase();
         if (~twoWay.indexOf(tagName)) {
@@ -42,10 +46,11 @@ export class Binding extends withEventListener(Base) implements IEventListener {
 
 
     onModelChanged() {
+
         if (this._bounded) {
-            setValue(this.element, this.model.get(this.prop));
+            setValue(this.element, this.model.get(this.prop) || '');
         } else {
-            this.element.innerText = this.model.get(this.prop);
+            this.element.innerText = this.model.get(this.prop) || '';
         }
 
     }
@@ -62,7 +67,7 @@ export class Binding extends withEventListener(Base) implements IEventListener {
 
 }
 
-export function withBindings<T extends Constructor<BaseView> & Constructor<IModelView<M>>, M extends Model>(Base: T, Model?: Constructor<M>): T & Constructor<IBindableView<M>> {
+export function withBindings<T extends Constructor<BaseView> & Constructor<IModelView<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
     return class extends Base {
         bindings: BindingDescription[];
 
@@ -92,12 +97,9 @@ export function withBindings<T extends Constructor<BaseView> & Constructor<IMode
         private _bindModelDom() {
             if (!this.el || !this.model) return;
 
-            // if (!this.bindings || !this.bindings.length) {
+            const bindings = (this.bindings || []).concat(this._parse());
 
-            // }
-            this.bindings = this._parse();
-
-            this._bindings = this.bindings.map(m => {
+            this._bindings = bindings.map(m => {
                 let el: HTMLElement;
                 if (isString(m.selector))
                     el = this.el.querySelector(m.selector);
