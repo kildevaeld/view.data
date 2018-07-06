@@ -1,15 +1,18 @@
-import { View, Constructor, Invoker } from '@viewjs/view';
-import { isString, isFunction, triggerMethodOn } from '@viewjs/utils';
+import { View } from '@viewjs/view';
+import { isString, isFunction, triggerMethodOn, Constructor, Invoker } from '@viewjs/utils';
 import { IModel } from './types';
 import { isEventEmitter } from '@viewjs/events'
 
 export interface IModelView<M extends IModel> {
     model?: M;
     setModel(model?: M): this;
-    modelEvents?: any;
+    modelEvents?: ModelEventsMap;
 }
 
-export type ModelEventsMap = { [key: string]: (string | ((...args: any[]) => any))[] }
+export type ModelEventsMap = {
+    [key: string]: (string | ((...args: any[]) => any))[];
+}
+
 
 export function withModel<T extends Constructor<View>, M extends IModel>(Base: T, Model?: Constructor<M>): T & Constructor<IModelView<M>> {
     return class extends Base {
@@ -25,11 +28,11 @@ export function withModel<T extends Constructor<View>, M extends IModel>(Base: T
             if (!this._model && this.Model) {
                 let model: M | undefined = void 0;
                 try {
-                    model = Invoker.get(this.Model as any) as any; 
-                    this.setModel(model as any);   
+                    model = Invoker.get(this.Model as any) as any;
+                    this.setModel(model as any);
                 } catch (e) { }
-                
-                
+
+
             }
             return this._model;
         }

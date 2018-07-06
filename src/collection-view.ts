@@ -1,6 +1,6 @@
-import { Constructor, BaseView, View, BaseViewOptions, Invoker, IView } from '@viewjs/view';
+import { BaseView, View, BaseViewOptions, IView } from '@viewjs/view';
 import { IModel, ICollection, ModelEvents } from './types';
-import { triggerMethodOn } from '@viewjs/utils';
+import { triggerMethodOn, Constructor, Invoker } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
 import { IModelView } from './model-view';
 

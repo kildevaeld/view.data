@@ -1,7 +1,8 @@
 export interface IModel {
-    set<U>(key: PropertyKey, value: U, options?: any): this;
-    get<U>(key: PropertyKey): U;
-    has(key: PropertyKey): boolean;
+    set<U>(key: string | number, value: U, options?: any): this;
+    get<U>(key: string | number): U;
+    has(key: string | number): boolean;
+    unset<U>(key: string | number): U | undefined;
     clear(): this;
     toJSON(): any;
 }

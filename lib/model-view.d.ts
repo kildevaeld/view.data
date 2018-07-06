@@ -1,9 +1,10 @@
-import { View, Constructor } from '@viewjs/view';
+import { View } from '@viewjs/view';
+import { Constructor } from '@viewjs/utils';
 import { IModel } from './types';
 export interface IModelView<M extends IModel> {
     model?: M;
     setModel(model?: M): this;
-    modelEvents?: any;
+    modelEvents?: ModelEventsMap;
 }
 export declare type ModelEventsMap = {
     [key: string]: (string | ((...args: any[]) => any))[];

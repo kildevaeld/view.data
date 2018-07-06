@@ -1,23 +1,24 @@
 const Path = require('path');
 const webpack = require('webpack');
+const WebpackBundleSizeAnalyzerPlugin = require('webpack-bundle-size-analyzer').WebpackBundleSizeAnalyzerPlugin;
+
 
 
 const babelOptions = {
-    "presets": [
-        "env"
-    ],
-    babelrc: false
+
 };
 
 module.exports = {
-    entry: './src/example/index.ts',
+    entry: './lib/example/index.js',
     resolve: {
+        mainFields: ['module', 'browser', 'main'],
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.ts', '.tsx', '.js'],
         alias: {
             debug: process.cwd() + "/node_modules/debug/src/browser.js"
         }
     },
+    mode: 'development',
     output: {
         filename: 'example.js',
         path: Path.join(process.cwd(), 'example'),
@@ -29,32 +30,33 @@ module.exports = {
     },*/
     module: {
         rules: [{
-                test: /\.ts(x?)$/,
-                exclude: /node_modules/,
-                use: [{
-                        loader: 'babel-loader',
-                        options: babelOptions
-                    },
-                    {
-                        loader: 'ts-loader',
-                        options: {
-                            compilerOptions: {
-                                declaration: false
-                            }
+            test: /\.ts(x?)$/,
+            exclude: /node_modules/,
+            use: [{
+                    loader: 'babel-loader',
+                    options: babelOptions
+                },
+                {
+                    loader: 'ts-loader',
+                    options: {
+                        compilerOptions: {
+                            declaration: false
                         }
                     }
-                ]
-            }
-            /*, {
-                        test: /\.js$/,
-                        exclude: /node_modules/,
-                        use: [{
-                            loader: 'babel-loader',
-                            options: babelOptions
-                        }]
-                    }*/
-        ]
+                }
+            ]
+        }, {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'babel-loader',
+                options: babelOptions
+            }]
+        }]
     },
+    plugins: [
+        new WebpackBundleSizeAnalyzerPlugin('plain-report.txt')
+    ],
     node: {
         console: false,
         global: false,

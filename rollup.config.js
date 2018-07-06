@@ -9,18 +9,26 @@ module.exports = [
     // browser-friendly UMD build
     {
         input: './src/index.ts',
-        output: {
+        output: [{
             file: pkg.browser,
             format: 'umd',
             name: 'viewjs.data',
             globals: {
                 '@viewjs/events': 'viewjs.events',
                 '@viewjs/view': 'viewjs.view',
-                '@viewjs/utils': 'viewjs.utils'
+                '@viewjs/utils': 'viewjs.utils',
+                '@viewjs/html': 'viewjs.html'
             }
-        },
-        external: ["@viewjs/view", "@viewjs/events", "@viewjs/utils"],
-        
+        }, {
+            file: pkg.module,
+            format: 'es'
+        }],
+        external: [
+            "@viewjs/view",
+            "@viewjs/events",
+            "@viewjs/utils",
+            "@viewjs/html"
+        ],
         plugins: [
             typescript({
                 typescript: require('typescript')
@@ -29,7 +37,16 @@ module.exports = [
             commonjs(), // so Rollup can convert `ms` to an ES module
             babel({
                 //presets: ['env'],
-                exclude: ['node_modules/**']
+                exclude: ['node_modules/**'],
+                //babelrc: false,
+                // presets: [
+                //     ["env", {
+                //         "modules": false
+                //     }]
+                // ],
+                // plugins: [
+                //     'external-helpers'
+                // ],
             })
         ]
     },

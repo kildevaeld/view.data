@@ -1,5 +1,6 @@
-import { Constructor, BaseView, BaseViewOptions, IView } from '@viewjs/view';
+import { BaseView, BaseViewOptions, IView } from '@viewjs/view';
 import { IModel, ICollection } from './types';
+import { Constructor } from '@viewjs/utils';
 import { IModelView } from './model-view';
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {
     collection?: TCollection;

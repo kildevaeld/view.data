@@ -1,3 +1,4 @@
+
 export * from './model';
 export * from './decorators';
 export * from './array-collection';
@@ -6,4 +7,4 @@ export * from './types';
 export * from './model-view';
 export * from './template-view';
 export * from './model-collection';
-//export * from './event-emitter';
+export * from './bindable-view';

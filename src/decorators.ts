@@ -1,15 +1,14 @@
 import { IModel, ICollection } from './types';
 import { IModelView } from './model-view';
 import { ICollectionView, ChildViewType } from './collection-view';
-import { has, extend } from '@viewjs/utils';
-import { Constructor } from '@viewjs/view';
-import 'reflect-metadata';
+import { has, extend, Constructor } from '@viewjs/utils';
 
 function setter<T extends IModel, U>(_: T, prop: any) {
     return function $observableSetter(this: T, value: U) {
         return this.set(prop, value)
     }
 }
+
 
 function getter<T extends IModel, U>(_: T, prop: any) {
     return function $observableGetter(this: T): U {
@@ -92,8 +91,7 @@ export namespace collection {
         }
     }
 
-    export function change(property?: string) {
-        return event("change", property);
-    }
+    export const add = event("add");
+    export const remove = event("remove");
 
 }

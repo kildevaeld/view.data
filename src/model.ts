@@ -1,7 +1,7 @@
-import { equal } from '@viewjs/utils';
+import { equal, triggerMethodOn } from '@viewjs/utils';
 import { MetaKeys, IModel } from './types';
 import { EventEmitter } from '@viewjs/events';
-import { triggerMethodOn } from '@viewjs/utils';
+
 
 export interface ModelSetOptions {
     silent?: boolean;

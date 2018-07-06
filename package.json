@@ -4,6 +4,7 @@
   "description": "",
   "main": "./lib/index.js",
   "browser": "./dist/view.data.js",
+  "module": "./dist/view.data.es6",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./node_modules/.bin/tsc; node ./node_modules/.bin/rollup -c"
@@ -14,34 +15,25 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.39",
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.0.0",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^2.0.0-alpha.20",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-es2016": "^6.24.1",
-    "gulp": "^3.9.1",
-    "gulp-bump": "^2.7.0",
-    "gulp-gzip": "^1.4.0",
-    "gulp-typescript": "^3.1.7",
-    "gulp-util": "^3.0.8",
-    "gulp-webpack": "^1.5.0",
-    "rollup": "^0.55.3",
-    "rollup-plugin-babel": "^4.0.0-beta.0",
-    "rollup-plugin-commonjs": "^8.3.0",
-    "rollup-plugin-node-resolve": "^3.0.2",
+    "@babel/preset-env": "^7.0.0-beta.52",
+    "babel-loader": "^8.0.0-beta.4",
+    "rollup": "^0.62.0",
+    "rollup-plugin-babel": "^4.0.0-beta.7",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-typescript": "^0.8.1",
-    "ts-loader": "^2.1.0",
-    "tslib": "^1.7.1",
-    "typescript": "^2.7.1",
-    "webpack": "^2.6.1"
+    "typescript": "^2.9.2",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8"
   },
   "dependencies": {
+    "@babel/core": "^7.0.0-beta.52",
     "@viewjs/events": "^1.0.0",
-    "@viewjs/utils": "^1.0.0",
+    "@viewjs/html": "^0.3.1",
+    "@viewjs/utils": "^1.3.0",
     "@viewjs/view": "^2.5.2",
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "^0.1.12",
+    "webpack-bundle-size-analyzer": "^2.7.0"
   },
   "typings": "./lib/index.d.ts"
 }

@@ -5,10 +5,14 @@ export interface ModelSetOptions {
 }
 export declare class Model extends EventEmitter implements IModel {
     [key: string]: any;
-    constructor();
+    private _idAttribute;
+    idAttribute: string;
+    readonly id: {};
+    constructor(attrs?: any);
     set<U>(key: string | number, value: U, options?: ModelSetOptions): this;
-    get<U>(key: string | number): U;
+    get<U>(key: string | number): U | undefined;
     has(key: string | number): boolean;
+    unset<U>(key: string | number): U | undefined;
     clear(): this;
-    toJSON(_?: boolean): any;
+    toJSON(): any;
 }

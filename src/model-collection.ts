@@ -1,8 +1,7 @@
 import { ArrayCollection } from './array-collection';
 import { IModel } from './types';
 import { Model } from './model';
-import { Invoker, Constructor } from '@viewjs/view';
-
+import { Invoker, Constructor } from '@viewjs/utils';
 
 
 export class ModelCollection<M extends Model> extends ArrayCollection<M> {

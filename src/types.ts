@@ -1,5 +1,6 @@
 import { isFunction } from '@viewjs/utils';
 
+
 export interface IModel {
     set<U>(key: string | number, value: U, options?: any): this;
     get<U>(key: string | number): U;
