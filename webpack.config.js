@@ -14,9 +14,6 @@ module.exports = {
         mainFields: ['module', 'browser', 'main'],
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.ts', '.tsx', '.js'],
-        alias: {
-            debug: process.cwd() + "/node_modules/debug/src/browser.js"
-        }
     },
     mode: 'development',
     output: {
