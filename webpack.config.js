@@ -47,7 +47,7 @@ module.exports = {
         }]
     },
     plugins: [
-        new WebpackBundleSizeAnalyzerPlugin('plain-report.txt')
+        new WebpackBundleSizeAnalyzerPlugin('plain-report2.txt')
     ],
     node: {
         console: false,

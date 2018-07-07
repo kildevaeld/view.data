@@ -6,6 +6,7 @@
 
     (function (MetaKeys) {
       MetaKeys.Attributes = Symbol("attributes");
+      MetaKeys.Models = Symbol("models");
     })(exports.MetaKeys || (exports.MetaKeys = {}));
 
     function isDestroyable(a) {
@@ -20,6 +21,7 @@
       ModelEvents.BeforeSort = "before:sort";
       ModelEvents.Sort = "sort";
       ModelEvents.Change = "change";
+      ModelEvents.BeforeReset = "before:reset";
       ModelEvents.Reset = "reset";
     })(exports.ModelEvents || (exports.ModelEvents = {}));
 
@@ -157,6 +159,11 @@
       throw new TypeError("Invalid attempt to spread non-iterable instance");
     }
 
+    var _a;
+    function isModel(a) {
+      return a && (a instanceof Model || utils.isFunction(a.set) && utils.isFunction(a.get) && utils.isFunction(a.unset) && utils.isFunction(a.clear));
+    }
+
     var Model =
     /*#__PURE__*/
     function (_EventEmitter) {
@@ -168,7 +175,7 @@
         _classCallCheck(this, Model);
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(Model).call(this));
-        _this[exports.MetaKeys.Attributes] = new Map();
+        _this[_a] = new Map();
 
         if (attrs) {
           for (var k in attrs) {
@@ -239,6 +246,7 @@
       return Model;
     }(events.EventEmitter);
 
+    _a = exports.MetaKeys.Attributes;
     Model.idAttribute = "id";
 
     function setter(_, prop) {
@@ -332,6 +340,21 @@
       collection.remove = event("remove");
     })(exports.collection || (exports.collection = {}));
 
+    function getValue(a, prop) {
+      if (isModel(a)) return a.get(prop);else if (utils.isObject(a)) {
+        return a[prop];
+      }
+      return void 0;
+    }
+
+    function _sort(a, b, prop) {
+      var av = getValue(a, prop),
+          bv = getValue(b, prop);
+      if (utils.isString(av)) av = av.toUpperCase();
+      if (utils.isString(bv)) bv = bv.toUpperCase();
+      if (av < bv) return -1;else if (av > bv) return 1;else return 0;
+    }
+
     var ArrayCollection =
     /*#__PURE__*/
     function (_EventEmitter) {
@@ -340,12 +363,12 @@
       function ArrayCollection() {
         var _this;
 
-        var a = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
         _classCallCheck(this, ArrayCollection);
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(ArrayCollection).call(this));
-        _this.a = a;
+        _this[exports.MetaKeys.Models] = array;
         return _this;
       }
       /**
@@ -369,8 +392,8 @@
          * @memberof ArrayCollection
          */
         value: function item(index) {
-          if (index >= this.a.length) return undefined;
-          return this.a[index];
+          if (index >= this[exports.MetaKeys.Models].length) return undefined;
+          return this[exports.MetaKeys.Models][index];
         }
         /**
          * Push an item and optionally trigger a change event
@@ -385,8 +408,8 @@
         key: "push",
         value: function push(m) {
           var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-          this.a.push(m);
-          if (trigger) this.trigger(exports.ModelEvents.Add, m, this.a.length - 1);
+          this[exports.MetaKeys.Models].push(m);
+          if (trigger) this.trigger(exports.ModelEvents.Add, m, this[exports.MetaKeys.Models].length - 1);
           return this.length;
         }
         /**
@@ -402,22 +425,22 @@
         key: "pop",
         value: function pop() {
           var trigger = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-          var m = this.a.pop();
-          if (trigger) this.trigger(exports.ModelEvents.Remove, m, this.a.length);
+          var m = this[exports.MetaKeys.Models].pop();
+          if (trigger) this.trigger(exports.ModelEvents.Remove, m, this[exports.MetaKeys.Models].length);
           return m;
         }
       }, {
         key: "insert",
         value: function insert(m, index) {
           if (index >= this.length) return;
-          this.a.splice(index, 0, m);
+          this[exports.MetaKeys.Models].splice(index, 0, m);
           this.trigger(exports.ModelEvents.Add, m, index);
         }
       }, {
         key: "indexOf",
         value: function indexOf(m) {
           for (var i = 0, ii = this.length; i < ii; i++) {
-            if (utils.equal(this.a[i], m)) return i;
+            if (this[exports.MetaKeys.Models][i] === m) return i;
           }
 
           return -1;
@@ -428,7 +451,7 @@
           var m = this.item(index);
           if (!m) return undefined;
           this.trigger(exports.ModelEvents.BeforeRemove, m, index);
-          this.a.splice(index, 1);
+          this[exports.MetaKeys.Models].splice(index, 1);
           this.trigger(exports.ModelEvents.Remove, m, index);
           return m;
         }
@@ -445,13 +468,27 @@
       }, {
         key: "find",
         value: function find(fn) {
-          return this.a.find(fn);
+          return this[exports.MetaKeys.Models].find(fn);
+        }
+      }, {
+        key: "findIndex",
+        value: function findIndex(fn) {
+          return this[exports.MetaKeys.Models].findIndex(fn);
         }
       }, {
         key: "sort",
-        value: function sort(fn) {
+        value: function sort(byComparatorOrProperty) {
           this.trigger(exports.ModelEvents.BeforeSort);
-          this.a.sort(fn);
+
+          if (utils.isString(byComparatorOrProperty)) {
+            var prop = byComparatorOrProperty;
+
+            byComparatorOrProperty = function byComparatorOrProperty(a, b) {
+              return _sort(a, b, prop);
+            };
+          }
+
+          this[exports.MetaKeys.Models].sort(byComparatorOrProperty);
           this.trigger(exports.ModelEvents.Sort);
         }
         /**
@@ -465,45 +502,56 @@
       }, {
         key: "reset",
         value: function reset(a) {
-          this.a = a || [];
+          this.trigger(exports.ModelEvents.BeforeReset);
+          this[exports.MetaKeys.Models] = a || [];
           this.trigger(exports.ModelEvents.Reset);
         }
       }, {
         key: "filter",
         value: function filter(fn) {
-          return Reflect.construct(this.constructor, [this.a.filter(fn)]);
+          return Reflect.construct(this.constructor, [this[exports.MetaKeys.Models].filter(fn)]);
         }
       }, {
         key: "map",
         value: function map(fn) {
-          return new ArrayCollection(this.a.map(fn));
+          return new ArrayCollection(this[exports.MetaKeys.Models].map(fn));
+        }
+      }, {
+        key: "forEach",
+        value: function forEach(fn) {
+          this.forEach(fn);
+          return this;
         }
       }, {
         key: "destroy",
         value: function destroy() {
-          for (var i = 0, ii = this.a.length; i < ii; i++) {
-            if (isDestroyable(this.a[i])) this.a[i].destroy();
+          for (var i = 0, ii = this[exports.MetaKeys.Models].length; i < ii; i++) {
+            if (isDestroyable(this[exports.MetaKeys.Models][i])) this[exports.MetaKeys.Models][i].destroy();
           }
 
-          this.a = [];
-        }
-        /**
-         * Returns a copy of the array
-         *
-         * @returns
-         *
-         * @memberof ArrayCollection
-         */
+          this[exports.MetaKeys.Models] = [];
+        } // Iterator interface
 
       }, {
-        key: "array",
-        value: function array() {
-          return _toConsumableArray(this.a);
+        key: (exports.MetaKeys.Models, Symbol.iterator),
+        value: function value() {
+          var pointer = 0;
+          var components = this[exports.MetaKeys.Models];
+          var len = components.length;
+          return {
+            next: function next() {
+              var done = pointer >= len;
+              return {
+                done: done,
+                value: done ? null : components[pointer++]
+              };
+            }
+          };
         }
       }, {
         key: "length",
         get: function get() {
-          return this.a.length;
+          return this[exports.MetaKeys.Models].length;
         }
       }]);
 
@@ -804,23 +852,22 @@
           _createClass(_class, [{
             key: "render",
             value: function render() {
-              this.undelegateEvents();
-
+              //this.undelegateEvents();
               this._removeChildViews();
 
               _get(_getPrototypeOf(_class.prototype), "render", this).call(this);
 
               if (!this.collection || !this.el) return this;
 
-              this._renderCollection();
+              this._renderCollection(); //this.delegateEvents();
 
-              this.delegateEvents();
+
               return this;
             }
           }, {
             key: "setCollection",
             value: function setCollection(collection) {
-              if (this._collection == collection) return;
+              if (this._collection == collection) return this;
 
               if (this.collection) {
                 this._removeModelEvents();
@@ -833,6 +880,8 @@
               if (this.collection) {
                 this._addModelEvents();
               }
+
+              return this;
             }
           }, {
             key: "_removeChildViews",
@@ -1120,6 +1169,7 @@
     }
 
     exports.isDestroyable = isDestroyable;
+    exports.isModel = isModel;
     exports.Model = Model;
     exports.property = property;
     exports.primaryKey = primaryKey;

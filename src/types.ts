@@ -15,8 +15,10 @@ export interface IModel {
     toJSON(): any;
 }
 
+
 export namespace MetaKeys {
     export const Attributes = Symbol("attributes");
+    export const Models = Symbol("models");
 }
 
 export interface Destroyable {
@@ -43,5 +45,6 @@ export namespace ModelEvents {
     export const BeforeSort = "before:sort";
     export const Sort = "sort";
     export const Change = "change";
+    export const BeforeReset = "before:reset";
     export const Reset = "reset";
 }

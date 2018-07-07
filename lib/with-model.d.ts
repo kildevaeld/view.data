@@ -8,4 +8,4 @@ export interface IModelController<M extends IModel> {
 export declare type ModelEventsMap = {
     [key: string]: (string | ((...args: any[]) => any))[];
 };
-export declare function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, Model?: Constructor<M>): T & Constructor<IModelController<M>>;
+export declare function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, TModel?: Constructor<M>): T & Constructor<IModelController<M>>;

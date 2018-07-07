@@ -1,14 +1,23 @@
-import { equal, triggerMethodOn } from '@viewjs/utils';
+import { equal, triggerMethodOn, isFunction } from '@viewjs/utils';
 import { MetaKeys, IModel } from './types';
 import { EventEmitter } from '@viewjs/events';
 
+
+export function isModel(a: any): a is IModel {
+    return a && ((a instanceof Model)
+        || (isFunction(a.set)
+            && isFunction(a.get)
+            && isFunction(a.unset)
+            && isFunction(a.clear))
+    );
+}
 
 export interface ModelSetOptions {
     silent?: boolean;
 }
 export class Model extends EventEmitter implements IModel {
     static idAttribute = "id";
-    [key: string]: any;
+    [MetaKeys.Attributes]: Map<string | number, any> = new Map();
 
     get id() {
         return this.get((this.constructor as any).idAttribute)
@@ -16,7 +25,6 @@ export class Model extends EventEmitter implements IModel {
 
     constructor(attrs?: any) {
         super();
-        (this as any)[MetaKeys.Attributes] = new Map<string | number, any>();
         if (attrs) {
             for (let k in attrs) {
                 this.set(k, attrs[k], { silent: true });
@@ -30,7 +38,7 @@ export class Model extends EventEmitter implements IModel {
             return this;
         }
 
-        (this as any)[MetaKeys.Attributes].set(key, value);
+        this[MetaKeys.Attributes].set(key, value);
 
         if (options && options.silent) return this;
 
@@ -40,21 +48,21 @@ export class Model extends EventEmitter implements IModel {
     }
 
     get<U>(key: string | number): U | undefined {
-        return (this as any)[MetaKeys.Attributes].get(key);
+        return this[MetaKeys.Attributes].get(key);
     }
 
     has(key: string | number): boolean {
-        return (this as any)[MetaKeys.Attributes].has(key);
+        return this[MetaKeys.Attributes].has(key);
     }
 
     unset<U>(key: string | number): U | undefined {
         let t = this.get<U>(key);
-        (this as any)[MetaKeys.Attributes].delete(key);
+        this[MetaKeys.Attributes].delete(key);
         return t;
     }
 
     clear() {
-        (this as any)[MetaKeys.Attributes] = new Map<PropertyKey, any>();
+        this[MetaKeys.Attributes] = new Map();
         triggerMethodOn(this, 'clear');
         return this;
     }
@@ -62,7 +70,7 @@ export class Model extends EventEmitter implements IModel {
     toJSON() {
         let out: any = {};
 
-        (this as any)[MetaKeys.Attributes].forEach((value: any, key: any) => {
+        this[MetaKeys.Attributes].forEach((value: any, key: any) => {
             out[key] = value;
         });
 

@@ -12,6 +12,7 @@ export interface IModel {
 }
 export declare namespace MetaKeys {
     const Attributes: unique symbol;
+    const Models: unique symbol;
 }
 export interface Destroyable {
     destroy(): void;
@@ -31,5 +32,6 @@ export declare namespace ModelEvents {
     const BeforeSort = "before:sort";
     const Sort = "sort";
     const Change = "change";
+    const BeforeReset = "before:reset";
     const Reset = "reset";
 }

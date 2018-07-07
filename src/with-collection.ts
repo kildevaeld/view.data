@@ -55,7 +55,7 @@ export function withCollection<
         }
 
         render() {
-            this.undelegateEvents();
+            //this.undelegateEvents();
             this._removeChildViews();
 
             super.render();
@@ -64,13 +64,13 @@ export function withCollection<
 
             this._renderCollection();
 
-            this.delegateEvents();
+            //this.delegateEvents();
 
             return this;
         }
 
-        protected setCollection(collection?: TCollection) {
-            if (this._collection == collection) return;
+        setCollection(collection?: TCollection) {
+            if (this._collection == collection) return this;
             if (this.collection) {
                 this._removeModelEvents();
                 this._removeChildViews();
@@ -81,9 +81,11 @@ export function withCollection<
             if (this.collection) {
                 this._addModelEvents();
             }
+            return this;
         }
 
         protected _removeChildViews() {
+
             if (!this._childViews) {
                 this._childViews = [];
             }
@@ -197,7 +199,7 @@ export function withCollection<
 
         private _proxyChildViewEvents(view: IEventEmitter) {
             const fn = (eventName: string, ...args: any[]) => {
-                eventName = getOption<string>('eventProxyName', [this.options]); //this.options.eventProxyName + ':' + eventName;
+                eventName = getOption<string>('eventProxyName', [this.options]) + ':' + eventName;; //this.options.eventProxyName + ':' + eventName;
                 triggerMethodOn(this, eventName, ...[view].concat(args));
             }
 

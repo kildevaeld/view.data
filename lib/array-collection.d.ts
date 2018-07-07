@@ -1,8 +1,8 @@
-import { ICollection } from './types';
+import { ICollection, MetaKeys } from './types';
 import { EventEmitter } from '@viewjs/events';
 export declare class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
-    private a;
-    constructor(a?: Array<T>);
+    constructor(array?: Array<T>);
+    private [MetaKeys.Models];
     /**
      * The length of the array
      *
@@ -42,9 +42,9 @@ export declare class ArrayCollection<T> extends EventEmitter implements ICollect
     indexOf(m: T): number;
     removeAtIndex(index: number): T | undefined;
     remove(model: T): T | undefined;
-    find(fn: (model: T) => boolean): T | undefined;
-    find(fn: (model: T, index: number) => boolean): T | undefined;
-    sort(fn: (a: T, b: T) => number): void;
+    find(fn: (model: T, index: number, obj: T[]) => boolean): T | undefined;
+    findIndex(fn: (model: T, index: number, obj: T[]) => boolean): number;
+    sort(byComparatorOrProperty?: ((a: T, b: T) => number) | string): void;
     /**
      * Reset the array
      *
@@ -54,14 +54,13 @@ export declare class ArrayCollection<T> extends EventEmitter implements ICollect
      */
     reset(a?: T[]): void;
     filter(fn: (a: T) => boolean): this;
-    map<U>(fn: (a: T) => U): ArrayCollection<U>;
+    map<U>(fn: (a: T, idx: number) => U): ArrayCollection<U>;
+    forEach(fn: (a: T, idx: number) => any): this;
     destroy(): void;
-    /**
-     * Returns a copy of the array
-     *
-     * @returns
-     *
-     * @memberof ArrayCollection
-     */
-    array(): T[];
+    [Symbol.iterator](): {
+        next(): {
+            done: boolean;
+            value: T;
+        };
+    };
 }

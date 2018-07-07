@@ -1,4 +1,4 @@
-import { isFunction, equal, triggerMethodOn, has, extend, Invoker, uniqueId, isPlainObject, result, isString, Base, getOption } from '@viewjs/utils';
+import { isFunction, equal, triggerMethodOn, has, extend, isString, isObject, Invoker, uniqueId, isPlainObject, result, Base, getOption } from '@viewjs/utils';
 import { EventEmitter, withEventListener, isEventEmitter } from '@viewjs/events';
 import { View, withTemplate, withElement } from '@viewjs/view';
 import { setValue, getValue, html } from '@viewjs/html';
@@ -7,6 +7,7 @@ var MetaKeys;
 
 (function (MetaKeys) {
   MetaKeys.Attributes = Symbol("attributes");
+  MetaKeys.Models = Symbol("models");
 })(MetaKeys || (MetaKeys = {}));
 
 function isDestroyable(a) {
@@ -22,6 +23,7 @@ var ModelEvents;
   ModelEvents.BeforeSort = "before:sort";
   ModelEvents.Sort = "sort";
   ModelEvents.Change = "change";
+  ModelEvents.BeforeReset = "before:reset";
   ModelEvents.Reset = "reset";
 })(ModelEvents || (ModelEvents = {}));
 
@@ -159,6 +161,11 @@ function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
+var _a;
+function isModel(a) {
+  return a && (a instanceof Model || isFunction(a.set) && isFunction(a.get) && isFunction(a.unset) && isFunction(a.clear));
+}
+
 var Model =
 /*#__PURE__*/
 function (_EventEmitter) {
@@ -170,7 +177,7 @@ function (_EventEmitter) {
     _classCallCheck(this, Model);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Model).call(this));
-    _this[MetaKeys.Attributes] = new Map();
+    _this[_a] = new Map();
 
     if (attrs) {
       for (var k in attrs) {
@@ -241,6 +248,7 @@ function (_EventEmitter) {
   return Model;
 }(EventEmitter);
 
+_a = MetaKeys.Attributes;
 Model.idAttribute = "id";
 
 function setter(_, prop) {
@@ -338,6 +346,21 @@ var collection;
   collection.remove = event("remove");
 })(collection || (collection = {}));
 
+function getValue$1(a, prop) {
+  if (isModel(a)) return a.get(prop);else if (isObject(a)) {
+    return a[prop];
+  }
+  return void 0;
+}
+
+function _sort(a, b, prop) {
+  var av = getValue$1(a, prop),
+      bv = getValue$1(b, prop);
+  if (isString(av)) av = av.toUpperCase();
+  if (isString(bv)) bv = bv.toUpperCase();
+  if (av < bv) return -1;else if (av > bv) return 1;else return 0;
+}
+
 var ArrayCollection =
 /*#__PURE__*/
 function (_EventEmitter) {
@@ -346,12 +369,12 @@ function (_EventEmitter) {
   function ArrayCollection() {
     var _this;
 
-    var a = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
     _classCallCheck(this, ArrayCollection);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ArrayCollection).call(this));
-    _this.a = a;
+    _this[MetaKeys.Models] = array;
     return _this;
   }
   /**
@@ -375,8 +398,8 @@ function (_EventEmitter) {
      * @memberof ArrayCollection
      */
     value: function item(index) {
-      if (index >= this.a.length) return undefined;
-      return this.a[index];
+      if (index >= this[MetaKeys.Models].length) return undefined;
+      return this[MetaKeys.Models][index];
     }
     /**
      * Push an item and optionally trigger a change event
@@ -391,8 +414,8 @@ function (_EventEmitter) {
     key: "push",
     value: function push(m) {
       var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      this.a.push(m);
-      if (trigger) this.trigger(ModelEvents.Add, m, this.a.length - 1);
+      this[MetaKeys.Models].push(m);
+      if (trigger) this.trigger(ModelEvents.Add, m, this[MetaKeys.Models].length - 1);
       return this.length;
     }
     /**
@@ -408,22 +431,22 @@ function (_EventEmitter) {
     key: "pop",
     value: function pop() {
       var trigger = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      var m = this.a.pop();
-      if (trigger) this.trigger(ModelEvents.Remove, m, this.a.length);
+      var m = this[MetaKeys.Models].pop();
+      if (trigger) this.trigger(ModelEvents.Remove, m, this[MetaKeys.Models].length);
       return m;
     }
   }, {
     key: "insert",
     value: function insert(m, index) {
       if (index >= this.length) return;
-      this.a.splice(index, 0, m);
+      this[MetaKeys.Models].splice(index, 0, m);
       this.trigger(ModelEvents.Add, m, index);
     }
   }, {
     key: "indexOf",
     value: function indexOf(m) {
       for (var i = 0, ii = this.length; i < ii; i++) {
-        if (equal(this.a[i], m)) return i;
+        if (this[MetaKeys.Models][i] === m) return i;
       }
 
       return -1;
@@ -434,7 +457,7 @@ function (_EventEmitter) {
       var m = this.item(index);
       if (!m) return undefined;
       this.trigger(ModelEvents.BeforeRemove, m, index);
-      this.a.splice(index, 1);
+      this[MetaKeys.Models].splice(index, 1);
       this.trigger(ModelEvents.Remove, m, index);
       return m;
     }
@@ -451,13 +474,27 @@ function (_EventEmitter) {
   }, {
     key: "find",
     value: function find(fn) {
-      return this.a.find(fn);
+      return this[MetaKeys.Models].find(fn);
+    }
+  }, {
+    key: "findIndex",
+    value: function findIndex(fn) {
+      return this[MetaKeys.Models].findIndex(fn);
     }
   }, {
     key: "sort",
-    value: function sort(fn) {
+    value: function sort(byComparatorOrProperty) {
       this.trigger(ModelEvents.BeforeSort);
-      this.a.sort(fn);
+
+      if (isString(byComparatorOrProperty)) {
+        var prop = byComparatorOrProperty;
+
+        byComparatorOrProperty = function byComparatorOrProperty(a, b) {
+          return _sort(a, b, prop);
+        };
+      }
+
+      this[MetaKeys.Models].sort(byComparatorOrProperty);
       this.trigger(ModelEvents.Sort);
     }
     /**
@@ -471,45 +508,56 @@ function (_EventEmitter) {
   }, {
     key: "reset",
     value: function reset(a) {
-      this.a = a || [];
+      this.trigger(ModelEvents.BeforeReset);
+      this[MetaKeys.Models] = a || [];
       this.trigger(ModelEvents.Reset);
     }
   }, {
     key: "filter",
     value: function filter(fn) {
-      return Reflect.construct(this.constructor, [this.a.filter(fn)]);
+      return Reflect.construct(this.constructor, [this[MetaKeys.Models].filter(fn)]);
     }
   }, {
     key: "map",
     value: function map(fn) {
-      return new ArrayCollection(this.a.map(fn));
+      return new ArrayCollection(this[MetaKeys.Models].map(fn));
+    }
+  }, {
+    key: "forEach",
+    value: function forEach(fn) {
+      this.forEach(fn);
+      return this;
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      for (var i = 0, ii = this.a.length; i < ii; i++) {
-        if (isDestroyable(this.a[i])) this.a[i].destroy();
+      for (var i = 0, ii = this[MetaKeys.Models].length; i < ii; i++) {
+        if (isDestroyable(this[MetaKeys.Models][i])) this[MetaKeys.Models][i].destroy();
       }
 
-      this.a = [];
-    }
-    /**
-     * Returns a copy of the array
-     *
-     * @returns
-     *
-     * @memberof ArrayCollection
-     */
+      this[MetaKeys.Models] = [];
+    } // Iterator interface
 
   }, {
-    key: "array",
-    value: function array() {
-      return _toConsumableArray(this.a);
+    key: (MetaKeys.Models, Symbol.iterator),
+    value: function value() {
+      var pointer = 0;
+      var components = this[MetaKeys.Models];
+      var len = components.length;
+      return {
+        next: function next() {
+          var done = pointer >= len;
+          return {
+            done: done,
+            value: done ? null : components[pointer++]
+          };
+        }
+      };
     }
   }, {
     key: "length",
     get: function get() {
-      return this.a.length;
+      return this[MetaKeys.Models].length;
     }
   }]);
 
@@ -810,23 +858,22 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
       _createClass(_class, [{
         key: "render",
         value: function render() {
-          this.undelegateEvents();
-
+          //this.undelegateEvents();
           this._removeChildViews();
 
           _get(_getPrototypeOf(_class.prototype), "render", this).call(this);
 
           if (!this.collection || !this.el) return this;
 
-          this._renderCollection();
+          this._renderCollection(); //this.delegateEvents();
 
-          this.delegateEvents();
+
           return this;
         }
       }, {
         key: "setCollection",
         value: function setCollection(collection) {
-          if (this._collection == collection) return;
+          if (this._collection == collection) return this;
 
           if (this.collection) {
             this._removeModelEvents();
@@ -839,6 +886,8 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
           if (this.collection) {
             this._addModelEvents();
           }
+
+          return this;
         }
       }, {
         key: "_removeChildViews",
@@ -1125,4 +1174,4 @@ function withModel(Base$$1, Model) {
   );
 }
 
-export { MetaKeys, isDestroyable, ModelEvents, Model, property, primaryKey, model, collection, ArrayCollection, ModelCollection, TemplateView, withBindings, withCollection, withModel };
+export { MetaKeys, isDestroyable, ModelEvents, isModel, Model, property, primaryKey, model, collection, ArrayCollection, ModelCollection, TemplateView, withBindings, withCollection, withModel };

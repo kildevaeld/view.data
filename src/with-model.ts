@@ -1,5 +1,6 @@
 import { isString, isFunction, triggerMethodOn, Constructor, Invoker, Base } from '@viewjs/utils';
 import { IModel } from './types';
+import { Model } from './model';
 import { isEventEmitter } from '@viewjs/events'
 
 export interface IModelController<M extends IModel> {
@@ -12,9 +13,9 @@ export type ModelEventsMap = {
     [key: string]: (string | ((...args: any[]) => any))[];
 }
 
-export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, Model?: Constructor<M>): T & Constructor<IModelController<M>> {
+export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, TModel?: Constructor<M>): T & Constructor<IModelController<M>> {
     return class extends Base {
-        Model = Model;
+        Model = TModel || Model as any;
         private _model: M | undefined;
         modelEvents: ModelEventsMap;
 

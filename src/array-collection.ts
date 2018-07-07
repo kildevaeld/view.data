@@ -1,12 +1,38 @@
-import { ICollection, ModelEvents, isDestroyable } from './types';
+import { ICollection, ModelEvents, isDestroyable, MetaKeys } from './types';
 import { EventEmitter } from '@viewjs/events';
-import { equal } from '@viewjs/utils';
+import { isString, isObject } from '@viewjs/utils';
+import { isModel } from './model';
 
+
+function getValue(a: any, prop: string) {
+    if (isModel(a))
+        return a.get(prop);
+    else if (isObject(a)) {
+        return a[prop];
+    }
+    return void 0;
+}
+
+function sort(a: any, b: any, prop: string) {
+    let av = getValue(a, prop),
+        bv = getValue(b, prop);
+    if (isString(av)) av = av.toUpperCase();
+    if (isString(bv)) bv = bv.toUpperCase();
+    if (av < bv)
+        return -1;
+    else if (av > bv)
+        return 1;
+    else
+        return 0;
+}
 
 export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
-    constructor(private a: Array<T> = []) {
+    constructor(array: Array<T> = []) {
         super();
+        this[MetaKeys.Models] = array;
     }
+
+    private [MetaKeys.Models]: T[]
 
     /**
      * The length of the array
@@ -16,7 +42,7 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      * @memberof ArrayCollection
      */
     get length(): number {
-        return this.a.length;
+        return this[MetaKeys.Models].length;
     }
 
     /**
@@ -28,8 +54,8 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      * @memberof ArrayCollection
      */
     item(index: number): T | undefined {
-        if (index >= this.a.length) return undefined;
-        return this.a[index];
+        if (index >= this[MetaKeys.Models].length) return undefined;
+        return this[MetaKeys.Models][index];
     }
 
     /**
@@ -41,9 +67,9 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      * @memberof ArrayCollection
      */
     push(m: T, trigger = true): number {
-        this.a.push(m);
+        this[MetaKeys.Models].push(m);
         if (trigger)
-            this.trigger(ModelEvents.Add, m, this.a.length - 1);
+            this.trigger(ModelEvents.Add, m, this[MetaKeys.Models].length - 1);
         return this.length;
     }
 
@@ -56,22 +82,22 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      * @memberof ArrayCollection
      */
     pop(trigger = true): T | undefined {
-        let m = this.a.pop()
+        let m = this[MetaKeys.Models].pop()
         if (trigger)
-            this.trigger(ModelEvents.Remove, m, this.a.length);
+            this.trigger(ModelEvents.Remove, m, this[MetaKeys.Models].length);
         return m;
     }
 
 
     insert(m: T, index: number) {
         if (index >= this.length) return;
-        this.a.splice(index, 0, m);
+        this[MetaKeys.Models].splice(index, 0, m);
         this.trigger(ModelEvents.Add, m, index);
     }
 
     indexOf(m: T) {
         for (let i = 0, ii = this.length; i < ii; i++) {
-            if (equal(this.a[i], m)) return i;
+            if (this[MetaKeys.Models][i] === m) return i;
         }
         return -1;
     }
@@ -80,7 +106,7 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
         let m = this.item(index);
         if (!m) return undefined;
         this.trigger(ModelEvents.BeforeRemove, m, index);
-        this.a.splice(index, 1);
+        this[MetaKeys.Models].splice(index, 1);
         this.trigger(ModelEvents.Remove, m, index);
         return m;
     }
@@ -93,15 +119,21 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
         return this.removeAtIndex(i);
     }
 
-    find(fn: (model: T) => boolean): T | undefined
-    find(fn: (model: T, index: number) => boolean): T | undefined
     find(fn: (model: T, index: number, obj: T[]) => boolean): T | undefined {
-        return this.a.find(fn);
+        return this[MetaKeys.Models].find(fn);
     }
 
-    sort(fn: (a: T, b: T) => number) {
+    findIndex(fn: (model: T, index: number, obj: T[]) => boolean): number {
+        return this[MetaKeys.Models].findIndex(fn);
+    }
+
+    sort(byComparatorOrProperty?: ((a: T, b: T) => number) | string) {
         this.trigger(ModelEvents.BeforeSort);
-        this.a.sort(fn);
+        if (isString(byComparatorOrProperty)) {
+            const prop = byComparatorOrProperty;
+            byComparatorOrProperty = (a, b) => sort(a, b, prop)
+        }
+        this[MetaKeys.Models].sort(byComparatorOrProperty);
         this.trigger(ModelEvents.Sort);
     }
 
@@ -113,32 +145,44 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
      * @memberof ArrayCollection
      */
     reset(a?: T[]) {
-        this.a = a || [];
+        this.trigger(ModelEvents.BeforeReset);
+        this[MetaKeys.Models] = a || [];
         this.trigger(ModelEvents.Reset);
     }
 
     filter(fn: (a: T) => boolean): this {
-        return Reflect.construct(this.constructor, [this.a.filter(fn)]);
+        return Reflect.construct(this.constructor, [this[MetaKeys.Models].filter(fn)]);
     }
 
-    map<U>(fn: (a: T) => U): ArrayCollection<U> {
-        return new ArrayCollection(this.a.map(fn));
+    map<U>(fn: (a: T, idx: number) => U): ArrayCollection<U> {
+        return new ArrayCollection(this[MetaKeys.Models].map(fn));
+    }
+
+    forEach(fn: (a: T, idx: number) => any) {
+        this.forEach(fn);
+        return this;
     }
 
     destroy() {
-        for (let i = 0, ii = this.a.length; i < ii; i++) {
-            if (isDestroyable(this.a[i])) (<any>this.a[i]).destroy();
+        for (let i = 0, ii = this[MetaKeys.Models].length; i < ii; i++) {
+            if (isDestroyable(this[MetaKeys.Models][i])) (<any>this[MetaKeys.Models][i]).destroy();
         }
-        this.a = [];
+        this[MetaKeys.Models] = [];
     }
 
-
-    /**
-     * Returns a copy of the array
-     *
-     * @returns
-     *
-     * @memberof ArrayCollection
-     */
-    array() { return [...this.a]; }
+    // Iterator interface
+    [Symbol.iterator]() {
+        let pointer = 0;
+        let components = this[MetaKeys.Models];
+        let len = components.length;
+        return {
+            next() {
+                let done = pointer >= len;
+                return {
+                    done: done,
+                    value: done ? null : components[pointer++]
+                };
+            }
+        };
+    }
 }

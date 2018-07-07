@@ -1,11 +1,12 @@
-import { IModel } from './types';
+import { MetaKeys, IModel } from './types';
 import { EventEmitter } from '@viewjs/events';
+export declare function isModel(a: any): a is IModel;
 export interface ModelSetOptions {
     silent?: boolean;
 }
 export declare class Model extends EventEmitter implements IModel {
     static idAttribute: string;
-    [key: string]: any;
+    [MetaKeys.Attributes]: Map<string | number, any>;
     readonly id: {};
     constructor(attrs?: any);
     set<U>(key: string | number, value: U, options?: ModelSetOptions): this;
