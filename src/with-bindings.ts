@@ -1,4 +1,4 @@
-import { BaseView } from '@viewjs/view';
+import { View } from '@viewjs/view';
 import { withEventListener, IEventListener, isEventEmitter } from '@viewjs/events';
 import { IModel } from './types';
 import { IModelController } from './with-model';
@@ -77,7 +77,7 @@ export interface BindingViewOptions {
     bindingAttribute?: string;
 }
 
-export function withBindings<T extends Constructor<BaseView> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
+export function withBindings<T extends Constructor<View> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
     return class extends Base {
         bindings: BindingDescription[];
 

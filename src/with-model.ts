@@ -1,4 +1,4 @@
-import { isString, isFunction, triggerMethodOn, Constructor, Invoker, Base } from '@viewjs/utils';
+import { isString, isFunction, triggerMethodOn, Constructor, Base } from '@viewjs/utils';
 import { IModel } from './types';
 import { Model } from './model';
 import { isEventEmitter } from '@viewjs/events'

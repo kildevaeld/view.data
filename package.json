@@ -33,7 +33,7 @@
   "dependencies": {
     "@viewjs/events": "^1.1.0",
     "@viewjs/html": "^1.1.0",
-    "@viewjs/view": "^2.5.2"
+    "@viewjs/view": "^2.6.0"
   },
   "typings": "./lib/index.d.ts"
 }
