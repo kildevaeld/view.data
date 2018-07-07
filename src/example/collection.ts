@@ -5,7 +5,6 @@ import { withBindings } from '../with-bindings';
 import { TemplateView } from '../template-view';
 import { Model } from '../model';
 import { event } from '@viewjs/view';
-import { model } from '../decorators';
 
 class ListItem extends withBindings(withModel(TemplateView)) {
     template = () => `<span bind="text"></span>`
@@ -38,35 +37,35 @@ const count = (char: string, count: number) => {
 
 const chars = 'abcdfeghijklmnop';
 let out = [];
-for (let i = 0; i < 8000; i++) {
+let collection = new ModelCollection();
+for (let i = 0; i < 100; i++) {
     let c = chars[i % chars.length];
-    out.push({ text: count(c, 5) + i })
+    collection.push({ text: count(c, 5) + i })
 }
-
+console.log(collection)
 let list = new List({ el: document.querySelector('#main') as HTMLElement }) //.render()
-list.collection = new ModelCollection(out);
+list.collection = collection;
 list.render();
 
-var counter = 7999;
-var ost = true;
+// var counter = 7999;
 
-const chunk = () => {
+// const chunk = () => {
 
-    while (counter % 100 != 0) {
-        if (counter == 0) return;
-        let index = Math.floor(Math.random() * counter)
-        let oid = Math.floor(Math.random() * counter);
+//     while (counter % 100 != 0) {
+//         if (counter == 0) return;
+//         let index = Math.floor(Math.random() * counter)
+//         let oid = Math.floor(Math.random() * counter);
 
-        list.collection.item(oid).set('text', "OST");
-        list.collection.removeAtIndex(index);
-        counter--;
+//         list.collection.item(oid).set('text', "OST");
+//         list.collection.removeAtIndex(index);
+//         counter--;
 
-    }
-    if (counter >= 0)
-        list.collection.pop()
-    counter--;
-    if (counter > 0)
-        setTimeout(chunk, 100)
-}
+//     }
+//     if (counter >= 0)
+//         list.collection.pop()
+//     counter--;
+//     if (counter > 0)
+//         setTimeout(chunk, 100)
+// }
 
-setTimeout(chunk, 3000)
+// setTimeout(chunk, 3000)

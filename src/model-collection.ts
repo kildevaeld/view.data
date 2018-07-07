@@ -56,4 +56,6 @@ export class ModelCollection<M extends Model> extends ArrayCollection<M> {
 
 		return super.push(m, trigger);
 	}
+
+
 }

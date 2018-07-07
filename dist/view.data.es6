@@ -1,4 +1,4 @@
-import { isFunction, equal, triggerMethodOn, has, extend, isString, isObject, Invoker, uniqueId, isPlainObject, result, Base, getOption } from '@viewjs/utils';
+import { isFunction, equal, triggerMethodOn, has, extend, isString, isObject, Invoker, uniqueId, isPlainObject, getOption, Base } from '@viewjs/utils';
 import { EventEmitter, withEventListener, isEventEmitter } from '@viewjs/events';
 import { View, withTemplate, withElement } from '@viewjs/view';
 import { setValue, getValue, html } from '@viewjs/html';
@@ -669,11 +669,13 @@ function (_withTemplate) {
   _createClass(TemplateView, [{
     key: "getTemplateData",
     value: function getTemplateData() {
-      if (this.model && isFunction(this.model.toJSON)) {
-        return this.model.toJSON();
+      var model = getOption('model', [this.options, this], true);
+
+      if (model && isFunction(model.toJSON)) {
+        return model.toJSON();
       }
 
-      return result(this, 'model');
+      return model;
     }
   }]);
 
@@ -1021,7 +1023,7 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
           var _this2 = this;
 
           var fn = function fn(eventName) {
-            eventName = getOption('eventProxyName', [_this2.options]); //this.options.eventProxyName + ':' + eventName;
+            eventName = getOption('eventProxyName', [_this2.options]) + ':' + eventName;
 
             for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
               args[_key2 - 1] = arguments[_key2];
@@ -1059,7 +1061,7 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
   );
 }
 
-function withModel(Base$$1, Model) {
+function withModel(Base$$1, TModel) {
   return (
     /*#__PURE__*/
     function (_Base) {
@@ -1071,7 +1073,7 @@ function withModel(Base$$1, Model) {
         _classCallCheck(this, _class);
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
-        _this.Model = Model;
+        _this.Model = TModel || Model;
         return _this;
       }
 

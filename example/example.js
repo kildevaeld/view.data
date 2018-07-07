@@ -284,39 +284,38 @@ var count = function count(char, _count) {
 
 var chars = 'abcdfeghijklmnop';
 var out = [];
+var collection = new model_collection_1.ModelCollection();
 
-for (var i = 0; i < 8000; i++) {
+for (var i = 0; i < 100; i++) {
   var c = chars[i % chars.length];
-  out.push({
+  collection.push({
     text: count(c, 5) + i
   });
 }
 
+console.log(collection);
 var list = new List({
   el: document.querySelector('#main')
 }); //.render()
 
-list.collection = new model_collection_1.ModelCollection(out);
-list.render();
-var counter = 7999;
-var ost = true;
-
-var chunk = function chunk() {
-  while (counter % 100 != 0) {
-    if (counter == 0) return;
-    var index = Math.floor(Math.random() * counter);
-    var oid = Math.floor(Math.random() * counter);
-    list.collection.item(oid).set('text', "OST");
-    list.collection.removeAtIndex(index);
-    counter--;
-  }
-
-  if (counter >= 0) list.collection.pop();
-  counter--;
-  if (counter > 0) setTimeout(chunk, 100);
-};
-
-setTimeout(chunk, 3000);
+list.collection = collection;
+list.render(); // var counter = 7999;
+// const chunk = () => {
+//     while (counter % 100 != 0) {
+//         if (counter == 0) return;
+//         let index = Math.floor(Math.random() * counter)
+//         let oid = Math.floor(Math.random() * counter);
+//         list.collection.item(oid).set('text', "OST");
+//         list.collection.removeAtIndex(index);
+//         counter--;
+//     }
+//     if (counter >= 0)
+//         list.collection.pop()
+//     counter--;
+//     if (counter > 0)
+//         setTimeout(chunk, 100)
+// }
+// setTimeout(chunk, 3000)
 
 /***/ }),
 /* 2 */
@@ -565,7 +564,8 @@ function withCollection(Base, CView, CCollection, MModel) {
           var _this2 = this;
 
           var fn = function fn(eventName) {
-            eventName = utils_1.getOption('eventProxyName', [_this2.options]); //this.options.eventProxyName + ':' + eventName;
+            eventName = utils_1.getOption('eventProxyName', [_this2.options]) + ':' + eventName;
+            ; //this.options.eventProxyName + ':' + eventName;
 
             for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
               args[_key2 - 1] = arguments[_key2];
@@ -616,7 +616,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "event", function() { return event; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "attach", function() { return attach; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BaseView", function() { return BaseView; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matches", function() { return matches; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalizeUIKeys", function() { return normalizeUIKeys; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalizeUIString", function() { return normalizeUIString; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AbstractView", function() { return AbstractView; });
@@ -627,15 +626,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _viewjs_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 
-// Because IE/edge stinks!
-var ElementProto = typeof Element !== 'undefined' && Element.prototype || {};
-var matchesSelector = ElementProto.matches || ElementProto.webkitMatchesSelector || ElementProto.mozMatchesSelector || ElementProto.msMatchesSelector || ElementProto.oMatchesSelector || function (selector) {
-    var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
-    return !!~Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["indexOf"])(nodeList, this);
-};
-function matches(elm, selector) {
-    return matchesSelector.call(elm, selector);
-}
 var kUIRegExp = /@(?:ui\.)?([a-zA-Z_\-\$#\d]+)/i;
 function normalizeUIKeys(obj, uimap) {
     var o = {},
@@ -871,7 +861,7 @@ var BaseView = function (_AbstractView) {
                 var node = e.target || e.srcElement;
                 if (e.delegateTarget) return;
                 for (; node && node != root; node = node.parentNode) {
-                    if (node && matches(node, selector)) {
+                    if (node && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["matches"])(node, selector)) {
                         e.delegateTarget = node;
                         debug$1("%s trigger %i listeners for '%s'-event on selector '%s'", self, domEvent.listeners.length, domEvent.eventName, domEvent.selector);
                         domEvent.listeners.forEach(function (listener) {
@@ -3116,9 +3106,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var utils_1 = __webpack_require__(6);
 
+var model_1 = __webpack_require__(10);
+
 var events_1 = __webpack_require__(7);
 
-function withModel(Base, Model) {
+function withModel(Base, TModel) {
   return (
     /*#__PURE__*/
     function (_Base) {
@@ -3130,7 +3122,7 @@ function withModel(Base, Model) {
         _classCallCheck(this, _class);
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
-        _this.Model = Model;
+        _this.Model = TModel || model_1.Model;
         return _this;
       }
 
@@ -4050,11 +4042,13 @@ function (_view_1$withTemplate) {
   _createClass(TemplateView, [{
     key: "getTemplateData",
     value: function getTemplateData() {
-      if (this.model && utils_1.isFunction(this.model.toJSON)) {
-        return this.model.toJSON();
+      var model = utils_1.getOption('model', [this.options, this], true);
+
+      if (model && utils_1.isFunction(model.toJSON)) {
+        return model.toJSON();
       }
 
-      return utils_1.result(this, 'model');
+      return model;
     }
   }]);
 

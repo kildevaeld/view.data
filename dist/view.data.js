@@ -663,11 +663,13 @@
       _createClass(TemplateView, [{
         key: "getTemplateData",
         value: function getTemplateData() {
-          if (this.model && utils.isFunction(this.model.toJSON)) {
-            return this.model.toJSON();
+          var model = utils.getOption('model', [this.options, this], true);
+
+          if (model && utils.isFunction(model.toJSON)) {
+            return model.toJSON();
           }
 
-          return utils.result(this, 'model');
+          return model;
         }
       }]);
 
@@ -1015,7 +1017,7 @@
               var _this2 = this;
 
               var fn = function fn(eventName) {
-                eventName = utils.getOption('eventProxyName', [_this2.options]); //this.options.eventProxyName + ':' + eventName;
+                eventName = utils.getOption('eventProxyName', [_this2.options]) + ':' + eventName;
 
                 for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
                   args[_key2 - 1] = arguments[_key2];
@@ -1053,7 +1055,7 @@
       );
     }
 
-    function withModel(Base, Model) {
+    function withModel(Base, TModel) {
       return (
         /*#__PURE__*/
         function (_Base) {
@@ -1065,7 +1067,7 @@
             _classCallCheck(this, _class);
 
             _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
-            _this.Model = Model;
+            _this.Model = TModel || Model;
             return _this;
           }
 

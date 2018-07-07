@@ -133,7 +133,9 @@ export class ArrayCollection<T> extends EventEmitter implements ICollection<T> {
             const prop = byComparatorOrProperty;
             byComparatorOrProperty = (a, b) => sort(a, b, prop)
         }
+
         this[MetaKeys.Models].sort(byComparatorOrProperty);
+
         this.trigger(ModelEvents.Sort);
     }
 
