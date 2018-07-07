@@ -1,4 +1,4 @@
-import { BaseView } from '@viewjs/view';
+import { View } from '@viewjs/view';
 import { IModel } from './types';
 import { IModelController } from './with-model';
 import { Constructor } from '@viewjs/utils';
@@ -12,4 +12,4 @@ export interface BindingDescription {
 export interface BindingViewOptions {
     bindingAttribute?: string;
 }
-export declare function withBindings<T extends Constructor<BaseView> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView>;
+export declare function withBindings<T extends Constructor<View> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView>;

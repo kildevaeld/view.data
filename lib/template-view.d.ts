@@ -4,7 +4,7 @@ export interface TemplateViewOptions<M> extends BaseViewOptions<HTMLElement> {
     template?: string | ((data: M) => string);
     model?: M;
 }
-declare const TemplateView_base: Constructor<IViewTemplate<any>> & Constructor<View & IViewElement>;
+declare const TemplateView_base: Constructor<IViewTemplate<any>> & Constructor<View<HTMLElement, BaseViewOptions<HTMLElement>> & IViewElement>;
 export declare class TemplateView<M = any> extends TemplateView_base implements IViewTemplate<M> {
     model: M;
     options: TemplateViewOptions<M>;
