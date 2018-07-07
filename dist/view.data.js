@@ -761,8 +761,9 @@
           _createClass(_class, [{
             key: "setModel",
             value: function setModel(model) {
+              var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
               if (this.model) this._unbindModelDom();
-              return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model);
+              return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model, trigger);
             }
           }, {
             key: "delegateEvents",
@@ -860,9 +861,11 @@
               _get(_getPrototypeOf(_class.prototype), "render", this).call(this);
 
               if (!this.collection || !this.el) return this;
+              console.time('render collection');
 
-              this._renderCollection(); //this.delegateEvents();
+              this._renderCollection();
 
+              console.timeEnd('render collection'); //this.delegateEvents();
 
               return this;
             }
@@ -950,7 +953,7 @@
             value: function _createChildView(model) {
               var Vi = utils.getOption('ChildView', [this.options, this]) || view.View;
               var el = utils.Invoker.get(Vi);
-              el.model = model;
+              el.setModel(model, false);
               el.options.attachId = true;
               return el;
             }
@@ -1068,13 +1071,15 @@
 
             _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
             _this.Model = TModel || Model;
+            _this._model = new Model();
             return _this;
           }
 
           _createClass(_class, [{
             key: "setModel",
             value: function setModel(model) {
-              utils.triggerMethodOn(this, 'before:set:model');
+              var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+              if (trigger) utils.triggerMethodOn(this, 'before:set:model');
 
               if (this._model) {
                 this._undelegateModelEvents(this._model);
@@ -1082,7 +1087,7 @@
 
               this._model = model;
               if (model) this._delegateModelEvents(model);
-              utils.triggerMethodOn(this, 'set:model');
+              if (trigger) utils.triggerMethodOn(this, 'set:model');
               return this;
             }
           }, {
@@ -1152,15 +1157,6 @@
               this.setModel(model);
             },
             get: function get() {
-              if (!this._model && this.Model) {
-                var model = void 0;
-
-                try {
-                  model = utils.Invoker.get(this.Model);
-                  this.setModel(model);
-                } catch (e) {}
-              }
-
               return this._model;
             }
           }]);
