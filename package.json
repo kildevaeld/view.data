@@ -1,6 +1,6 @@
 {
   "name": "@viewjs/data",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "main": "./lib/index.js",
   "browser": "./dist/view.data.js",
