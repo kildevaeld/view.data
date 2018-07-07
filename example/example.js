@@ -285,37 +285,40 @@ var count = function count(char, _count) {
 var chars = 'abcdfeghijklmnop';
 var out = [];
 var collection = new model_collection_1.ModelCollection();
+console.time('Generate');
 
-for (var i = 0; i < 100; i++) {
+for (var i = 0; i < 10000; i++) {
   var c = chars[i % chars.length];
   collection.push({
     text: count(c, 5) + i
   });
 }
 
-console.log(collection);
+console.timeEnd('Generate');
 var list = new List({
   el: document.querySelector('#main')
 }); //.render()
 
 list.collection = collection;
-list.render(); // var counter = 7999;
-// const chunk = () => {
-//     while (counter % 100 != 0) {
-//         if (counter == 0) return;
-//         let index = Math.floor(Math.random() * counter)
-//         let oid = Math.floor(Math.random() * counter);
-//         list.collection.item(oid).set('text', "OST");
-//         list.collection.removeAtIndex(index);
-//         counter--;
-//     }
-//     if (counter >= 0)
-//         list.collection.pop()
-//     counter--;
-//     if (counter > 0)
-//         setTimeout(chunk, 100)
-// }
-// setTimeout(chunk, 3000)
+list.render();
+var counter = 9999;
+
+var chunk = function chunk() {
+  while (counter % 100 != 0) {
+    if (counter == 0) return;
+    var index = Math.floor(Math.random() * counter);
+    var oid = Math.floor(Math.random() * counter);
+    list.collection.item(oid).set('text', "OST");
+    list.collection.removeAtIndex(index);
+    counter--;
+  }
+
+  if (counter >= 0) list.collection.pop();
+  counter--;
+  if (counter > 0) setTimeout(chunk, 100);
+};
+
+setTimeout(chunk, 3000);
 
 /***/ }),
 /* 2 */
@@ -407,9 +410,11 @@ function withCollection(Base, CView, CCollection, MModel) {
           _get(_getPrototypeOf(_class.prototype), "render", this).call(this);
 
           if (!this.collection || !this.el) return this;
+          console.time('render collection');
 
-          this._renderCollection(); //this.delegateEvents();
+          this._renderCollection();
 
+          console.timeEnd('render collection'); //this.delegateEvents();
 
           return this;
         }
@@ -497,7 +502,7 @@ function withCollection(Base, CView, CCollection, MModel) {
         value: function _createChildView(model) {
           var Vi = utils_1.getOption('ChildView', [this.options, this]) || view_1.View;
           var el = utils_1.Invoker.get(Vi);
-          el.model = model;
+          el.setModel(model, false);
           el.options.attachId = true;
           return el;
         }
@@ -1869,25 +1874,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "debug", function() { return debug; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Base", function() { return Base; });
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
+    return typeof obj;
 } : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
 
 var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
 };
 
 var toConsumableArray = function (arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+    if (Array.isArray(arr)) {
+        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
-    return arr2;
-  } else {
-    return Array.from(arr);
-  }
+        return arr2;
+    } else {
+        return Array.from(arr);
+    }
 };
 
 // Because IE/edge stinks!
@@ -1896,12 +1901,15 @@ var matchesSelector = ElementProto.matches || ElementProto.webkitMatchesSelector
     var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
     return !!~indexOf(nodeList, this);
 };
+
 function matches(elm, selector) {
     return matchesSelector.call(elm, selector);
 }
+
 function getGlobal() {
     return Function('return this')();
 }
+
 function callFunc(fn) {
     var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
@@ -1916,33 +1924,41 @@ function callFunc(fn) {
         case 0:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx);
-            }return;
+            }
+            return;
         case 1:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx, a1);
-            }return;
+            }
+            return;
         case 2:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx, a1, a2);
-            }return;
+            }
+            return;
         case 3:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx, a1, a2, a3);
-            }return;
+            }
+            return;
         case 4:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx, a1, a2, a3, a4);
-            }return;
+            }
+            return;
         case 5:
             while (++i < l) {
                 fn[i].handler.call(fn[i].ctx, a1, a2, a3, a4, a5);
-            }return;
+            }
+            return;
         default:
             while (++i < l) {
                 fn[i].handler.apply(fn[i].ctx, args);
-            }return;
+            }
+            return;
     }
 }
+
 function callFuncCtx(fn) {
     var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var ctx = arguments[2];
@@ -1959,33 +1975,41 @@ function callFuncCtx(fn) {
         case 0:
             while (++i < l) {
                 fn[i].call(ctx);
-            }return;
+            }
+            return;
         case 1:
             while (++i < l) {
                 fn[i].call(ctx, a1);
-            }return;
+            }
+            return;
         case 2:
             while (++i < l) {
                 fn[i].call(ctx, a1, a2);
-            }return;
+            }
+            return;
         case 3:
             while (++i < l) {
                 fn[i].call(ctx, a1, a2, a3);
-            }return;
+            }
+            return;
         case 4:
             while (++i < l) {
                 fn[i].call(ctx, a1, a2, a3, a4);
-            }return;
+            }
+            return;
         case 5:
             while (++i < l) {
                 fn[i].call(ctx, a1, a2, a3, a4, a5);
-            }return;
+            }
+            return;
         default:
             while (++i < l) {
                 fn[i].apply(ctx, args);
-            }return;
+            }
+            return;
     }
 }
+
 function result(obj, prop) {
     for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
         args[_key - 2] = arguments[_key];
@@ -1994,6 +2018,7 @@ function result(obj, prop) {
     if (isFunction(obj[prop])) return obj[prop].apply(obj, args);
     return obj[prop];
 }
+
 function getOption(option, objs) {
     var resolve = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -2034,15 +2059,19 @@ function triggerMethodOn(self, eventName) {
         }], args);
     }
 }
+
 function isObjectLike(val) {
     return val === Object(val);
 }
+
 function isObject(val) {
     return val != null && (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' && Array.isArray(val) === false;
 }
+
 function isObjectObject(o) {
     return isObject(o) === true && Object.prototype.toString.call(o) === '[object Object]';
 }
+
 function isPlainObject(o) {
     var ctor, prot;
     if (isObjectObject(o) === false) return false;
@@ -2059,9 +2088,11 @@ function isPlainObject(o) {
     // Most likely a plain Object
     return true;
 }
+
 function isFunction(a) {
     return typeof a === 'function';
 }
+
 function isConstructor(a) {
     try {
         Reflect.construct(String, [], a);
@@ -2070,16 +2101,21 @@ function isConstructor(a) {
     }
     return true;
 }
+
 function isString(a) {
     return typeof a === 'string';
 }
+
 function isElement(input) {
-    if (!input) return false;else if (input instanceof Element) return true;
+    if (!input) return false;
+    else if (input instanceof Element) return true;
     return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === Node.ELEMENT_NODE && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
 }
+
 function isNumber(num) {
     return typeof num === 'number';
 }
+
 function isNumeric(num) {
     if (typeof num === 'number') {
         return num - num === 0;
@@ -2089,6 +2125,7 @@ function isNumeric(num) {
     }
     return false;
 }
+
 function extend(obj) {
     if (!isObject(obj)) return obj;
 
@@ -2107,33 +2144,40 @@ function extend(obj) {
 }
 var _has = Object.prototype.hasOwnProperty,
     _slice = Array.prototype.slice;
+
 function has(obj, prop) {
     return _has.call(obj, prop);
 }
+
 function slice(obj, start, len) {
     return _slice.call(obj, start, len);
 }
+
 function camelcase(input) {
     return input.toLowerCase().replace(/-(.)/g, function (_, group1) {
         return group1.toUpperCase();
     });
 }
 var idCounter = 0;
+
 function uniqueId() {
     var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
     return prefix + ++idCounter;
 }
+
 function indexOf(array, item) {
     for (var i = 0, len = array.length; i < len; i++) {
         if (array[i] === item) return i;
-    }return -1;
+    }
+    return -1;
 }
 
 function equal(a, b) {
     return eq(a, b, [], []);
 }
 var toString = Object.prototype.toString;
+
 function eq(a, b, aStack, bStack) {
     // Identical objects are equal. `0 === -0`, but they aren't identical.
     // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
@@ -2159,7 +2203,7 @@ function eq(a, b, aStack, bStack) {
             // millisecond representations. Note that invalid dates with millisecond representations
             // of `NaN` are not equivalent.
             return +a == +b;
-        // RegExps are compared by their source patterns and flags.
+            // RegExps are compared by their source patterns and flags.
         case '[object RegExp]':
             return a.source == b.source && a.global == b.global && a.multiline == b.multiline && a.ignoreCase == b.ignoreCase;
     }
@@ -2226,13 +2270,14 @@ var defaultInvoker = {
     }
 };
 var Invoker = defaultInvoker;
+
 function setInvoker(i) {
     if (!i) i = defaultInvoker;
     Invoker = i;
 }
 
 var Base = function Base() {
-  classCallCheck(this, Base);
+    classCallCheck(this, Base);
 };
 
 var global$1 = getGlobal();
@@ -2257,7 +2302,6 @@ var debug = global$1.localStorage && global$1.localStorage.getItem("viewjs.debug
 } : function (_) {
     return function () {};
 };
-
 
 
 
@@ -3123,13 +3167,15 @@ function withModel(Base, TModel) {
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
         _this.Model = TModel || model_1.Model;
+        _this._model = new model_1.Model();
         return _this;
       }
 
       _createClass(_class, [{
         key: "setModel",
         value: function setModel(model) {
-          utils_1.triggerMethodOn(this, 'before:set:model');
+          var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+          if (trigger) utils_1.triggerMethodOn(this, 'before:set:model');
 
           if (this._model) {
             this._undelegateModelEvents(this._model);
@@ -3137,7 +3183,7 @@ function withModel(Base, TModel) {
 
           this._model = model;
           if (model) this._delegateModelEvents(model);
-          utils_1.triggerMethodOn(this, 'set:model');
+          if (trigger) utils_1.triggerMethodOn(this, 'set:model');
           return this;
         }
       }, {
@@ -3207,15 +3253,6 @@ function withModel(Base, TModel) {
           this.setModel(model);
         },
         get: function get() {
-          if (!this._model && this.Model) {
-            var model = void 0;
-
-            try {
-              model = utils_1.Invoker.get(this.Model);
-              this.setModel(model);
-            } catch (e) {}
-          }
-
           return this._model;
         }
       }]);
@@ -3351,8 +3388,9 @@ function withBindings(Base) {
       _createClass(_class, [{
         key: "setModel",
         value: function setModel(model) {
+          var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
           if (this.model) this._unbindModelDom();
-          return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model);
+          return _get(_getPrototypeOf(_class.prototype), "setModel", this).call(this, model, trigger);
         }
       }, {
         key: "delegateEvents",

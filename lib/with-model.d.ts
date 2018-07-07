@@ -2,7 +2,7 @@ import { Constructor, Base } from '@viewjs/utils';
 import { IModel } from './types';
 export interface IModelController<M extends IModel> {
     model?: M;
-    setModel(model?: M): this;
+    setModel(model?: M, trigger?: boolean): this;
     modelEvents?: ModelEventsMap;
 }
 export declare type ModelEventsMap = {

@@ -83,9 +83,9 @@ export function withBindings<T extends Constructor<BaseView> & Constructor<IMode
 
         private _bindings: Binding[];
 
-        setModel(model: M) {
+        setModel(model: M, trigger = true) {
             if (this.model) this._unbindModelDom();
-            return super.setModel(model);
+            return super.setModel(model, trigger);
         }
 
         delegateEvents() {

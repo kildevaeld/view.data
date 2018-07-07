@@ -5,7 +5,7 @@ import { isEventEmitter } from '@viewjs/events'
 
 export interface IModelController<M extends IModel> {
     model?: M;
-    setModel(model?: M): this;
+    setModel(model?: M, trigger?: boolean): this;
     modelEvents?: ModelEventsMap;
 }
 
@@ -16,7 +16,7 @@ export type ModelEventsMap = {
 export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T, TModel?: Constructor<M>): T & Constructor<IModelController<M>> {
     return class extends Base {
         Model = TModel || Model as any;
-        private _model: M | undefined;
+        private _model: M | undefined = new Model() as any;
         modelEvents: ModelEventsMap;
 
         set model(model: M | undefined) {
@@ -24,20 +24,13 @@ export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T
         }
 
         get model(): M | undefined {
-            if (!this._model && this.Model) {
-                let model: M | undefined = void 0;
-                try {
-                    model = Invoker.get(this.Model as any) as any;
-                    this.setModel(model as any);
-                } catch (e) { }
-
-
-            }
             return this._model;
         }
 
-        setModel(model?: M) {
-            triggerMethodOn(this, 'before:set:model');
+
+        setModel(model?: M, trigger = true) {
+            if (trigger)
+                triggerMethodOn(this, 'before:set:model');
             if (this._model) {
                 this._undelegateModelEvents(this._model)
             }
@@ -45,8 +38,8 @@ export function withModel<T extends Constructor<Base>, M extends IModel>(Base: T
 
             if (model)
                 this._delegateModelEvents(model);
-
-            triggerMethodOn(this, 'set:model');
+            if (trigger)
+                triggerMethodOn(this, 'set:model');
             return this;
         }
 

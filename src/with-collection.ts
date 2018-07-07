@@ -61,8 +61,9 @@ export function withCollection<
             super.render();
 
             if (!this.collection || !this.el) return this;
-
+            console.time('render collection');
             this._renderCollection();
+            console.timeEnd('render collection')
 
             //this.delegateEvents();
 
@@ -83,6 +84,7 @@ export function withCollection<
             }
             return this;
         }
+
 
         protected _removeChildViews() {
 
@@ -110,14 +112,21 @@ export function withCollection<
             const frag = document.createDocumentFragment();
 
             for (let i = 0, ii = col!.length; i < ii; i++) {
+
                 let item = col!.item(i);
                 if (!item) throw RangeError("invalid index");
+
                 let view = this._createChildView(item);
+
                 this._renderChildView(view);
+
                 this._attachChildView(frag, view, i);
+
+
             }
 
             container.appendChild(frag);
+
         }
 
 
@@ -143,10 +152,11 @@ export function withCollection<
 
 
         protected _createChildView(model: TModel): TView {
+
             let Vi: Constructor<TView> = getOption('ChildView', [this.options, this]) || View as any;
 
             let el = Invoker.get<any>(Vi);
-            el.model = model;
+            el.setModel(model, false);
             el.options.attachId = true;
 
             return el as TView;
