@@ -19,7 +19,7 @@ const twoWay = ['input', 'textarea', 'select'],
     keyupTypes = ['text', 'number', 'email']
 
 
-class Binding extends withEventListener(Base) implements IEventListener {
+export class Binding extends withEventListener(Base) implements IEventListener {
     private _bounded: string | undefined = void 0;
     private _setting = false;
     constructor(

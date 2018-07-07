@@ -1172,4 +1172,4 @@ function withModel(Base$$1, TModel) {
   );
 }
 
-export { MetaKeys, isDestroyable, ModelEvents, isModel, Model, property, primaryKey, model, collection, ArrayCollection, ModelCollection, TemplateView, withBindings, withCollection, withModel };
+export { MetaKeys, isDestroyable, ModelEvents, isModel, Model, property, primaryKey, model, collection, ArrayCollection, ModelCollection, TemplateView, withBindings, Binding, withCollection, withModel };

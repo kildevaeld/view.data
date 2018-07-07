@@ -1175,6 +1175,7 @@
     exports.ModelCollection = ModelCollection;
     exports.TemplateView = TemplateView;
     exports.withBindings = withBindings;
+    exports.Binding = Binding;
     exports.withCollection = withCollection;
     exports.withModel = withModel;
 
