@@ -3014,8 +3014,7 @@ function (_events_1$withEventLi) {
       } else element.addEventListener('change', _this.onElementChanged);
     }
 
-    _this.onModelChanged();
-
+    if (_this.model.has(prop)) _this.onModelChanged();else _this.onElementChanged();
     return _this;
   }
 
@@ -3038,7 +3037,7 @@ function (_events_1$withEventLi) {
     value: function onElementChanged() {
       if (this._setting) return;
       this._setting = true;
-      this.model.set(this.prop, html_1.getValue(this.element));
+      this.model.set(this.prop, html_1.getValue(this.element) || '');
       this._setting = false;
     }
   }, {
@@ -3051,6 +3050,8 @@ function (_events_1$withEventLi) {
 
   return Binding;
 }(events_1.withEventListener(utils_1.Base));
+
+exports.Binding = Binding;
 
 function withBindings(Base) {
   return (

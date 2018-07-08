@@ -17,7 +17,8 @@ module.exports = [
                 '@viewjs/events': 'viewjs.events',
                 '@viewjs/view': 'viewjs.view',
                 '@viewjs/utils': 'viewjs.utils',
-                '@viewjs/html': 'viewjs.html'
+                '@viewjs/html': 'viewjs.html',
+                '@viewjs/data': 'viewjs.data'
             }
         }, {
             file: pkg.module,
@@ -27,7 +28,8 @@ module.exports = [
             "@viewjs/view",
             "@viewjs/events",
             "@viewjs/utils",
-            "@viewjs/html"
+            "@viewjs/html",
+            "@viewjs/data"
         ],
         plugins: [
             typescript({
