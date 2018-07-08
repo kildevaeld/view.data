@@ -708,8 +708,7 @@
           } else element.addEventListener('change', _this.onElementChanged);
         }
 
-        _this.onModelChanged();
-
+        if (_this.model.has(prop)) _this.onModelChanged();else _this.onElementChanged();
         return _this;
       }
 
@@ -732,7 +731,7 @@
         value: function onElementChanged() {
           if (this._setting) return;
           this._setting = true;
-          this.model.set(this.prop, html.getValue(this.element));
+          this.model.set(this.prop, html.getValue(this.element) || '');
           this._setting = false;
         }
       }, {
