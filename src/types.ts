@@ -8,7 +8,7 @@ export interface ModelConstructor<T> {
 export interface IModel {
     //idAttribute: string;
     set<U>(key: string | number, value: U, options?: any): this;
-    get<U>(key: string | number): U;
+    get<U>(key: string | number): U | undefined;
     has(key: string | number): boolean;
     unset<U>(key: string | number): U | undefined;
     clear(): this;
