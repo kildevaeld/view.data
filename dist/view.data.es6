@@ -737,7 +737,7 @@ function (_withEventListener) {
     value: function onElementChanged() {
       if (this._setting) return;
       this._setting = true;
-      this.model.set(this.prop, getValue(this.element) || '');
+      this.model.set(this.prop, getValue(this.element) || null);
       this._setting = false;
     }
   }, {

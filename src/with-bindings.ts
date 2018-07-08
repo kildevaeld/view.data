@@ -62,7 +62,7 @@ export class Binding extends withEventListener(Base) implements IEventListener {
     onElementChanged() {
         if (this._setting) return;
         this._setting = true;
-        this.model.set(this.prop, getValue(this.element) || '');
+        this.model.set(this.prop, getValue(this.element) || null);
         this._setting = false;
     }
 
