@@ -1,7 +1,6 @@
 import { View } from '@viewjs/view';
 import { withEventListener, IEventListener, isEventEmitter } from '@viewjs/events';
-import { IModel } from './types';
-import { IModelController } from './with-model';
+import { IModelController, IModel } from '@viewjs/models';
 import { setValue, getValue, html } from '@viewjs/html';
 import { isString, Constructor, Base, getOption } from '@viewjs/utils';
 

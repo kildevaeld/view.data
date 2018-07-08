@@ -201,15 +201,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var with_collection_1 = __webpack_require__(2);
 
-var model_collection_1 = __webpack_require__(7);
+var models_1 = __webpack_require__(7);
 
-var with_model_1 = __webpack_require__(10);
+var with_bindings_1 = __webpack_require__(8);
 
-var with_bindings_1 = __webpack_require__(11);
-
-var template_view_1 = __webpack_require__(13);
-
-var model_1 = __webpack_require__(9);
+var template_view_1 = __webpack_require__(10);
 
 var view_1 = __webpack_require__(3);
 
@@ -233,7 +229,7 @@ function (_with_bindings_1$with) {
   }
 
   return ListItem;
-}(with_bindings_1.withBindings(with_model_1.withModel(template_view_1.TemplateView)));
+}(with_bindings_1.withBindings(models_1.withModel(template_view_1.TemplateView)));
 
 ;
 
@@ -266,7 +262,7 @@ function (_with_collection_1$wi) {
   }]);
 
   return List;
-}(with_collection_1.withCollection(template_view_1.TemplateView, ListItem, model_collection_1.ModelCollection, model_1.Model));
+}(with_collection_1.withCollection(template_view_1.TemplateView, ListItem, models_1.ModelCollection, models_1.Model));
 
 __decorate([view_1.event('click', 'button'), __metadata("design:type", Function), __metadata("design:paramtypes", []), __metadata("design:returntype", void 0)], List.prototype, "onSortEller", null);
 
@@ -284,7 +280,7 @@ var count = function count(char, _count) {
 
 var chars = 'abcdfeghijklmnop';
 var out = [];
-var collection = new model_collection_1.ModelCollection();
+var collection = new models_1.ModelCollection();
 console.time('Generate');
 
 for (var i = 0; i < 10000; i++) {
@@ -369,7 +365,7 @@ var utils_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(6);
 
-var model_collection_1 = __webpack_require__(7);
+var models_1 = __webpack_require__(7);
 
 function withCollection(Base, CView, CCollection, MModel) {
   return (
@@ -393,7 +389,7 @@ function withCollection(Base, CView, CCollection, MModel) {
         _this.options.eventProxyName = utils_1.getOption('childView', [_this.options]) || 'childView';
         _this.collection = CCollection ? new CCollection() : void 0;
 
-        if (MModel && _this.collection && _this.collection instanceof model_collection_1.ModelCollection) {
+        if (MModel && _this.collection && _this.collection instanceof models_1.ModelCollection) {
           _this.collection.Model = MModel;
         }
 
@@ -1955,21 +1951,6 @@ var debug = global$1.localStorage && global$1.localStorage.getItem("viewjs.debug
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var utils_1 = __webpack_require__(4);
-
-var MetaKeys;
-
-(function (MetaKeys) {
-  MetaKeys.Attributes = Symbol("attributes");
-  MetaKeys.Models = Symbol("models");
-})(MetaKeys = exports.MetaKeys || (exports.MetaKeys = {}));
-
-function isDestroyable(a) {
-  return a && utils_1.isFunction(a.destroy);
-}
-
-exports.isDestroyable = isDestroyable;
 var ModelEvents;
 
 (function (ModelEvents) {
@@ -2288,434 +2269,185 @@ function withEventListener(Base$$1) {
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decorators", function() { return decorators; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MetaKeys", function() { return MetaKeys; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDestroyable", function() { return isDestroyable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModelEvents", function() { return ModelEvents; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isModel", function() { return isModel; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Model", function() { return Model; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayCollection", function() { return ArrayCollection; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModelCollection", function() { return ModelCollection; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "withModel", function() { return withModel; });
+/* harmony import */ var _viewjs_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _viewjs_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var MetaKeys;
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+(function (MetaKeys) {
+  MetaKeys.Attributes = Symbol("attributes");
+  MetaKeys.Models = Symbol("models");
+})(MetaKeys || (MetaKeys = {}));
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function isDestroyable(a) {
+  return a && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(a.destroy);
+}
+var ModelEvents;
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+(function (ModelEvents) {
+  ModelEvents.Add = "add";
+  ModelEvents.BeforeRemove = "before:remove";
+  ModelEvents.Remove = "remove";
+  ModelEvents.Clear = "clear";
+  ModelEvents.BeforeSort = "before:sort";
+  ModelEvents.Sort = "sort";
+  ModelEvents.Change = "change";
+  ModelEvents.BeforeReset = "before:reset";
+  ModelEvents.Reset = "reset";
+})(ModelEvents || (ModelEvents = {}));
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
-
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var array_collection_1 = __webpack_require__(8);
-
-var model_1 = __webpack_require__(9);
-
-var utils_1 = __webpack_require__(4);
-
-var ModelCollection =
-/*#__PURE__*/
-function (_array_collection_1$A) {
-  _inherits(ModelCollection, _array_collection_1$A);
-
-  function ModelCollection(models) {
-    var _this;
-
-    _classCallCheck(this, ModelCollection);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModelCollection).call(this));
-    _this.Model = model_1.Model;
-
-    if (Array.isArray(models)) {
-      models.forEach(function (m) {
-        return _this.push(m);
-      });
-    }
-
-    return _this;
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
   }
 
-  _createClass(ModelCollection, [{
-    key: "createModel",
-    value: function createModel(o) {
-      var model = utils_1.Invoker.get(this.Model);
-
-      if (o) {
-        for (var key in o) {
-          model.set(key, o[key]);
-        }
-      }
-
-      if (!model.has(this.Model.idAttribute)) {
-        model.set(this.Model.idAttribute, utils_1.uniqueId());
-      }
-
-      return model;
-    }
-    /**
-     * Push a model to the collection
-     *
-     * @param {(M | any)} m
-     * @param {boolean} [trigger=true]
-     * @returns {number}
-     * @memberof ModelCollection
-     */
-
-  }, {
-    key: "push",
-    value: function push(m) {
-      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-      if (!(m instanceof this.Model)) {
-        if (!utils_1.isPlainObject(m)) throw new TypeError("invalid type");
-        m = this.createModel(m);
-      } else if (m instanceof model_1.Model && !m.has(this.Model.idAttribute)) {
-        m.set(this.Model.idAttribute, utils_1.uniqueId());
-      }
-
-      var found = this.find(function (model) {
-        return model.id == m.id;
-      });
-
-      if (found && found !== m) {
-        var json = m.toJSON();
-
-        for (var k in json) {
-          m.set(k, json[k]);
-        }
-
-        return this.length;
-      } else if (found === m) return this.length;
-
-      return _get(_getPrototypeOf(ModelCollection.prototype), "push", this).call(this, m, trigger);
-    }
-  }]);
-
-  return ModelCollection;
-}(array_collection_1.ArrayCollection);
-
-exports.ModelCollection = ModelCollection;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var types_1 = __webpack_require__(5);
-
-var events_1 = __webpack_require__(6);
-
-var utils_1 = __webpack_require__(4);
-
-var model_1 = __webpack_require__(9);
-
-function getValue(a, prop) {
-  if (model_1.isModel(a)) return a.get(prop);else if (utils_1.isObject(a)) {
-    return a[prop];
-  }
-  return void 0;
+  return _typeof(obj);
 }
 
-function _sort(a, b, prop) {
-  var av = getValue(a, prop),
-      bv = getValue(b, prop);
-  if (utils_1.isString(av)) av = av.toUpperCase();
-  if (utils_1.isString(bv)) bv = bv.toUpperCase();
-  if (av < bv) return -1;else if (av > bv) return 1;else return 0;
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
 }
 
-var ArrayCollection =
-/*#__PURE__*/
-function (_events_1$EventEmitte) {
-  _inherits(ArrayCollection, _events_1$EventEmitte);
-
-  function ArrayCollection() {
-    var _this;
-
-    var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-    _classCallCheck(this, ArrayCollection);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArrayCollection).call(this));
-    _this[types_1.MetaKeys.Models] = array;
-    return _this;
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
   }
-  /**
-   * The length of the array
-   *
-   * @readonly
-   * @type {number}
-   * @memberof ArrayCollection
-   */
+}
 
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
 
-  _createClass(ArrayCollection, [{
-    key: "item",
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
 
-    /**
-     * Get item at index
-     *
-     * @param {number} index
-     * @returns {(T | undefined)}
-     *
-     * @memberof ArrayCollection
-     */
-    value: function item(index) {
-      if (index >= this[types_1.MetaKeys.Models].length) return undefined;
-      return this[types_1.MetaKeys.Models][index];
+  return obj;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
     }
-    /**
-     * Push an item and optionally trigger a change event
-     *
-     * @param {T} m
-     * @param {boolean} [trigger=true]
-     *
-     * @memberof ArrayCollection
-     */
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
 
-  }, {
-    key: "push",
-    value: function push(m) {
-      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      this[types_1.MetaKeys.Models].push(m);
-      if (trigger) this.trigger(types_1.ModelEvents.Add, m, this[types_1.MetaKeys.Models].length - 1);
-      return this.length;
-    }
-    /**
-     * Pop a item from the array and optinally trigger a change event
-     *
-     * @param {boolean} [trigger=true]
-     * @returns {(T | undefined)}
-     *
-     * @memberof ArrayCollection
-     */
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
 
-  }, {
-    key: "pop",
-    value: function pop() {
-      var trigger = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      var m = this[types_1.MetaKeys.Models].pop();
-      if (trigger) this.trigger(types_1.ModelEvents.Remove, m, this[types_1.MetaKeys.Models].length);
-      return m;
-    }
-  }, {
-    key: "insert",
-    value: function insert(m, index) {
-      if (index >= this.length) return;
-      this[types_1.MetaKeys.Models].splice(index, 0, m);
-      this.trigger(types_1.ModelEvents.Add, m, index);
-    }
-  }, {
-    key: "indexOf",
-    value: function indexOf(m) {
-      for (var i = 0, ii = this.length; i < ii; i++) {
-        if (this[types_1.MetaKeys.Models][i] === m) return i;
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return _assertThisInitialized(self);
+}
+
+function _superPropBase(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf(object);
+    if (object === null) break;
+  }
+
+  return object;
+}
+
+function _get(target, property, receiver) {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get = Reflect.get;
+  } else {
+    _get = function _get(target, property, receiver) {
+      var base = _superPropBase(target, property);
+
+      if (!base) return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+
+      if (desc.get) {
+        return desc.get.call(receiver);
       }
 
-      return -1;
-    }
-  }, {
-    key: "removeAtIndex",
-    value: function removeAtIndex(index) {
-      var m = this.item(index);
-      if (!m) return undefined;
-      this.trigger(types_1.ModelEvents.BeforeRemove, m, index);
-      this[types_1.MetaKeys.Models].splice(index, 1);
-      this.trigger(types_1.ModelEvents.Remove, m, index);
-      return m;
-    }
-  }, {
-    key: "remove",
-    value: function remove(model) {
-      var i = -1;
+      return desc.value;
+    };
+  }
 
-      if (!~(i = this.indexOf(model))) {
-        return void 0;
-      }
-
-      ;
-      return this.removeAtIndex(i);
-    }
-  }, {
-    key: "find",
-    value: function find(fn) {
-      return this[types_1.MetaKeys.Models].find(fn);
-    }
-  }, {
-    key: "findIndex",
-    value: function findIndex(fn) {
-      return this[types_1.MetaKeys.Models].findIndex(fn);
-    }
-  }, {
-    key: "sort",
-    value: function sort(byComparatorOrProperty) {
-      this.trigger(types_1.ModelEvents.BeforeSort);
-
-      if (utils_1.isString(byComparatorOrProperty)) {
-        var prop = byComparatorOrProperty;
-
-        byComparatorOrProperty = function byComparatorOrProperty(a, b) {
-          return _sort(a, b, prop);
-        };
-      }
-
-      this[types_1.MetaKeys.Models].sort(byComparatorOrProperty);
-      this.trigger(types_1.ModelEvents.Sort);
-    }
-    /**
-     * Reset the array
-     *
-     * @param {T[]} [a]
-     *
-     * @memberof ArrayCollection
-     */
-
-  }, {
-    key: "reset",
-    value: function reset(a) {
-      this.trigger(types_1.ModelEvents.BeforeReset);
-      this[types_1.MetaKeys.Models] = a || [];
-      this.trigger(types_1.ModelEvents.Reset);
-    }
-  }, {
-    key: "filter",
-    value: function filter(fn) {
-      return Reflect.construct(this.constructor, [this[types_1.MetaKeys.Models].filter(fn)]);
-    }
-  }, {
-    key: "map",
-    value: function map(fn) {
-      return new ArrayCollection(this[types_1.MetaKeys.Models].map(fn));
-    }
-  }, {
-    key: "forEach",
-    value: function forEach(fn) {
-      this.forEach(fn);
-      return this;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      for (var i = 0, ii = this[types_1.MetaKeys.Models].length; i < ii; i++) {
-        if (types_1.isDestroyable(this[types_1.MetaKeys.Models][i])) this[types_1.MetaKeys.Models][i].destroy();
-      }
-
-      this[types_1.MetaKeys.Models] = [];
-    } // Iterator interface
-
-  }, {
-    key: (types_1.MetaKeys.Models, Symbol.iterator),
-    value: function value() {
-      var pointer = 0;
-      var components = this[types_1.MetaKeys.Models];
-      var len = components.length;
-      return {
-        next: function next() {
-          var done = pointer >= len;
-          return {
-            done: done,
-            value: done ? null : components[pointer++]
-          };
-        }
-      };
-    }
-  }, {
-    key: "length",
-    get: function get() {
-      return this[types_1.MetaKeys.Models].length;
-    }
-  }]);
-
-  return ArrayCollection;
-}(events_1.EventEmitter);
-
-exports.ArrayCollection = ArrayCollection;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+  return _get(target, property, receiver || target);
+}
 
 var _a;
-
-var utils_1 = __webpack_require__(4);
-
-var types_1 = __webpack_require__(5);
-
-var events_1 = __webpack_require__(6);
-
 function isModel(a) {
-  return a && (a instanceof Model || utils_1.isFunction(a.set) && utils_1.isFunction(a.get) && utils_1.isFunction(a.unset) && utils_1.isFunction(a.clear));
+  return a && (a instanceof Model || Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(a.set) && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(a.get) && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(a.unset) && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(a.clear));
 }
-
-exports.isModel = isModel;
 
 var Model =
 /*#__PURE__*/
-function (_events_1$EventEmitte) {
-  _inherits(Model, _events_1$EventEmitte);
+function (_EventEmitter) {
+  _inherits(Model, _EventEmitter);
 
   function Model(attrs) {
     var _this;
@@ -2739,47 +2471,64 @@ function (_events_1$EventEmitte) {
   _createClass(Model, [{
     key: "set",
     value: function set(key, value, options) {
-      var old = this.get(key);
+      var input = {};
+      options = options || {};
+      if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(key) || Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(key)) input = _defineProperty({}, key, value);else if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isPlainObject"])(input)) input = key;else throw new TypeError('invalid key type ' + _typeof(key));
+      var o,
+          v,
+          c = false,
+          changed = {};
 
-      if (utils_1.equal(old, value)) {
-        return this;
+      for (var k in input) {
+        o = this.get(k);
+        v = input[k];
+
+        if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["equal"])(o, v)) {
+          continue;
+        }
+
+        c = true;
+        this[MetaKeys.Attributes].set(k, v);
+        changed[k] = v;
+
+        if (!options.silent) {
+          this.trigger("change:".concat(k), o, v);
+        }
       }
 
-      this[types_1.MetaKeys.Attributes].set(key, value);
-      if (options && options.silent) return this;
-      utils_1.triggerMethodOn(this, "change:".concat(key), old, value);
-      utils_1.triggerMethodOn(this, 'change', _defineProperty({}, key, value));
+      if (c && !options.silent) Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["triggerMethodOn"])(this, 'change', changed);
       return this;
     }
   }, {
     key: "get",
     value: function get(key) {
-      return this[types_1.MetaKeys.Attributes].get(key);
+      return this[MetaKeys.Attributes].get(key);
     }
   }, {
     key: "has",
-    value: function has(key) {
-      return this[types_1.MetaKeys.Attributes].has(key);
+    value: function has$$1(key) {
+      return this[MetaKeys.Attributes].has(key);
     }
   }, {
     key: "unset",
     value: function unset(key) {
+      if (!this.has(key)) return void 0;
       var t = this.get(key);
-      this[types_1.MetaKeys.Attributes].delete(key);
+      this[MetaKeys.Attributes].delete(key);
       return t;
     }
   }, {
     key: "clear",
     value: function clear() {
-      this[types_1.MetaKeys.Attributes] = new Map();
-      utils_1.triggerMethodOn(this, 'clear');
+      this[MetaKeys.Attributes].clear();
+      Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["triggerMethodOn"])(this, 'clear');
       return this;
     }
   }, {
     key: "toJSON",
     value: function toJSON() {
       var out = {};
-      this[types_1.MetaKeys.Attributes].forEach(function (value, key) {
+      this[MetaKeys.Attributes].forEach(function (value, key) {
         out[key] = value;
       });
       return out;
@@ -2792,46 +2541,309 @@ function (_events_1$EventEmitte) {
   }]);
 
   return Model;
-}(events_1.EventEmitter);
+}(_viewjs_events__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]);
 
-_a = types_1.MetaKeys.Attributes;
+_a = MetaKeys.Attributes;
 Model.idAttribute = "id";
-exports.Model = Model;
 
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
+function getValue(a, prop) {
+  if (isModel(a)) return a.get(prop);else if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isObject"])(a)) {
+    return a[prop];
+  }
+  return void 0;
+}
 
-"use strict";
+function _sort(a, b, prop) {
+  var av = getValue(a, prop),
+      bv = getValue(b, prop);
+  if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(av)) av = av.toUpperCase();
+  if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(bv)) bv = bv.toUpperCase();
+  if (av < bv) return -1;else if (av > bv) return 1;else return 0;
+}
+
+var ArrayCollection =
+/*#__PURE__*/
+function (_EventEmitter) {
+  _inherits(ArrayCollection, _EventEmitter);
+
+  function ArrayCollection() {
+    var _this;
+
+    var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    _classCallCheck(this, ArrayCollection);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArrayCollection).call(this));
+    _this[MetaKeys.Models] = array;
+    return _this;
+  }
+  /**
+   * The length of the array
+   *
+   * @readonly
+   * @type {number}
+   * @memberof ArrayCollection
+   */
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+  _createClass(ArrayCollection, [{
+    key: "item",
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    /**
+     * Get item at index
+     *
+     * @param {number} index
+     * @returns {(T | undefined)}
+     *
+     * @memberof ArrayCollection
+     */
+    value: function item(index) {
+      if (index >= this[MetaKeys.Models].length) return undefined;
+      return this[MetaKeys.Models][index];
+    }
+    /**
+     * Push an item and optionally trigger a change event
+     *
+     * @param {T} m
+     * @param {boolean} [trigger=true]
+     *
+     * @memberof ArrayCollection
+     */
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+  }, {
+    key: "push",
+    value: function push(m) {
+      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      this[MetaKeys.Models].push(m);
+      if (trigger) this.trigger(ModelEvents.Add, m, this[MetaKeys.Models].length - 1);
+      return this.length;
+    }
+    /**
+     * Pop a item from the array and optinally trigger a change event
+     *
+     * @param {boolean} [trigger=true]
+     * @returns {(T | undefined)}
+     *
+     * @memberof ArrayCollection
+     */
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+  }, {
+    key: "pop",
+    value: function pop() {
+      var trigger = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      var m = this[MetaKeys.Models].pop();
+      if (trigger) this.trigger(ModelEvents.Remove, m, this[MetaKeys.Models].length);
+      return m;
+    }
+  }, {
+    key: "insert",
+    value: function insert(m, index) {
+      if (index >= this.length) return;
+      this[MetaKeys.Models].splice(index, 0, m);
+      this.trigger(ModelEvents.Add, m, index);
+    }
+  }, {
+    key: "indexOf",
+    value: function indexOf(m) {
+      for (var i = 0, ii = this.length; i < ii; i++) {
+        if (this[MetaKeys.Models][i] === m) return i;
+      }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+      return -1;
+    }
+  }, {
+    key: "removeAtIndex",
+    value: function removeAtIndex(index) {
+      var m = this.item(index);
+      if (!m) return undefined;
+      this.trigger(ModelEvents.BeforeRemove, m, index);
+      this[MetaKeys.Models].splice(index, 1);
+      this.trigger(ModelEvents.Remove, m, index);
+      return m;
+    }
+  }, {
+    key: "remove",
+    value: function remove(model) {
+      var i = -1;
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+      if (!~(i = this.indexOf(model))) {
+        return void 0;
+      }
+      return this.removeAtIndex(i);
+    }
+  }, {
+    key: "find",
+    value: function find(fn) {
+      return this[MetaKeys.Models].find(fn);
+    }
+  }, {
+    key: "findIndex",
+    value: function findIndex(fn) {
+      return this[MetaKeys.Models].findIndex(fn);
+    }
+  }, {
+    key: "sort",
+    value: function sort(byComparatorOrProperty) {
+      this.trigger(ModelEvents.BeforeSort);
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+      if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(byComparatorOrProperty)) {
+        var prop = byComparatorOrProperty;
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+        byComparatorOrProperty = function byComparatorOrProperty(a, b) {
+          return _sort(a, b, prop);
+        };
+      }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+      this[MetaKeys.Models].sort(byComparatorOrProperty);
+      this.trigger(ModelEvents.Sort);
+    }
+    /**
+     * Reset the array
+     *
+     * @param {T[]} [a]
+     *
+     * @memberof ArrayCollection
+     */
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+  }, {
+    key: "reset",
+    value: function reset(a) {
+      this.trigger(ModelEvents.BeforeReset);
+      this[MetaKeys.Models] = a || [];
+      this.trigger(ModelEvents.Reset);
+    }
+  }, {
+    key: "filter",
+    value: function filter(fn) {
+      return Reflect.construct(this.constructor, [this[MetaKeys.Models].filter(fn)]);
+    }
+  }, {
+    key: "map",
+    value: function map(fn) {
+      return new ArrayCollection(this[MetaKeys.Models].map(fn));
+    }
+  }, {
+    key: "forEach",
+    value: function forEach(fn) {
+      this.forEach(fn);
+      return this;
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      for (var i = 0, ii = this[MetaKeys.Models].length; i < ii; i++) {
+        if (isDestroyable(this[MetaKeys.Models][i])) this[MetaKeys.Models][i].destroy();
+      }
 
-var utils_1 = __webpack_require__(4);
+      this[MetaKeys.Models] = [];
+    } // Iterator interface
 
-var model_1 = __webpack_require__(9);
+  }, {
+    key: (MetaKeys.Models, Symbol.iterator),
+    value: function value() {
+      var pointer = 0;
+      var components = this[MetaKeys.Models];
+      var len = components.length;
+      return {
+        next: function next() {
+          var done = pointer >= len;
+          return {
+            done: done,
+            value: done ? null : components[pointer++]
+          };
+        }
+      };
+    }
+  }, {
+    key: "length",
+    get: function get() {
+      return this[MetaKeys.Models].length;
+    }
+  }]);
 
-var events_1 = __webpack_require__(6);
+  return ArrayCollection;
+}(_viewjs_events__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]);
+
+var ModelCollection =
+/*#__PURE__*/
+function (_ArrayCollection) {
+  _inherits(ModelCollection, _ArrayCollection);
+
+  function ModelCollection(models) {
+    var _this;
+
+    _classCallCheck(this, ModelCollection);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModelCollection).call(this));
+    _this.Model = Model;
+
+    if (Array.isArray(models)) {
+      models.forEach(function (m) {
+        return _this.push(m);
+      });
+    }
+
+    return _this;
+  }
+
+  _createClass(ModelCollection, [{
+    key: "createModel",
+    value: function createModel(o) {
+      var model = _viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["Invoker"].get(this.Model);
+
+      if (o) {
+        for (var key in o) {
+          model.set(key, o[key]);
+        }
+      }
+
+      if (!model.has(this.Model.idAttribute)) {
+        model.set(this.Model.idAttribute, Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["uniqueId"])());
+      }
+
+      return model;
+    }
+    /**
+     * Push a model to the collection
+     *
+     * @param {(M | any)} m
+     * @param {boolean} [trigger=true]
+     * @returns {number}
+     * @memberof ModelCollection
+     */
+
+  }, {
+    key: "push",
+    value: function push(m) {
+      var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (!(m instanceof this.Model)) {
+        if (!Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isPlainObject"])(m)) throw new TypeError("invalid type");
+        m = this.createModel(m);
+      } else if (m instanceof Model && !m.has(this.Model.idAttribute)) {
+        m.set(this.Model.idAttribute, Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["uniqueId"])());
+      }
+
+      var found = this.find(function (model) {
+        return model.id == m.id;
+      });
+
+      if (found && found !== m) {
+        var json = m.toJSON();
+
+        for (var k in json) {
+          m.set(k, json[k]);
+        }
+
+        return this.length;
+      } else if (found === m) return this.length;
+
+      return _get(_getPrototypeOf(ModelCollection.prototype), "push", this).call(this, m, trigger);
+    }
+  }]);
+
+  return ModelCollection;
+}(ArrayCollection);
 
 function withModel(Base, TModel) {
   return (
@@ -2845,8 +2857,9 @@ function withModel(Base, TModel) {
         _classCallCheck(this, _class);
 
         _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
-        _this.Model = TModel || model_1.Model;
-        _this._model = new model_1.Model();
+        _this.Model = TModel || Model;
+        _this._model = new Model();
+        _this.modelEvents = {};
         return _this;
       }
 
@@ -2854,7 +2867,7 @@ function withModel(Base, TModel) {
         key: "setModel",
         value: function setModel(model) {
           var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-          if (trigger) utils_1.triggerMethodOn(this, 'before:set:model');
+          if (trigger) Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["triggerMethodOn"])(this, 'before:set:model');
 
           if (this._model) {
             this._undelegateModelEvents(this._model);
@@ -2862,7 +2875,7 @@ function withModel(Base, TModel) {
 
           this._model = model;
           if (model) this._delegateModelEvents(model);
-          if (trigger) utils_1.triggerMethodOn(this, 'set:model');
+          if (trigger) Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["triggerMethodOn"])(this, 'set:model');
           return this;
         }
       }, {
@@ -2870,14 +2883,14 @@ function withModel(Base, TModel) {
         value: function _undelegateModelEvents(model) {
           var _this2 = this;
 
-          if (!this.modelEvents || !model || !events_1.isEventEmitter(model)) {
+          if (!this.modelEvents || !model || !Object(_viewjs_events__WEBPACK_IMPORTED_MODULE_1__["isEventEmitter"])(model)) {
             return;
           }
 
           var _loop = function _loop(key) {
             _this2.modelEvents[key].forEach(function (m) {
-              if (utils_1.isString(m)) {
-                if (utils_1.isFunction(_this2[m])) {
+              if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(m)) {
+                if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(_this2[m])) {
                   m = _this2[m];
                 } else {
                   throw new Error('not a function');
@@ -2897,14 +2910,14 @@ function withModel(Base, TModel) {
         value: function _delegateModelEvents(model) {
           var _this3 = this;
 
-          if (!this.modelEvents || !model || !events_1.isEventEmitter(model)) {
+          if (!this.modelEvents || !model || !Object(_viewjs_events__WEBPACK_IMPORTED_MODULE_1__["isEventEmitter"])(model)) {
             return;
           }
 
           var _loop2 = function _loop2(key) {
             _this3.modelEvents[key].forEach(function (m) {
-              if (utils_1.isString(m)) {
-                if (utils_1.isFunction(_this3[m])) {
+              if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(m)) {
+                if (Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(_this3[m])) {
                   m = _this3[m];
                 } else {
                   throw new Error('not a function');
@@ -2941,10 +2954,99 @@ function withModel(Base, TModel) {
   );
 }
 
-exports.withModel = withModel;
+function setter(_, prop) {
+  return function $observableSetter(value) {
+    return this.set(prop, value);
+  };
+}
+
+function getter(_, prop) {
+  return function $observableGetter() {
+    return this.get(prop);
+  };
+}
+
+function _event(event, property, target, prop, desc, targetKey) {
+  if (!desc) throw new Error('no description');
+
+  if (typeof desc.value !== 'function') {
+    throw new TypeError('must be a function');
+  }
+
+  var key = event + (property ? ':' + property : '');
+
+  if (target[targetKey] && Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["has"])(target[targetKey], key)) {
+    var old = target[targetKey][key];
+    if (!Array.isArray(old)) old = [old];
+    old.push(prop);
+    target[targetKey][key] = old;
+  } else {
+    target[targetKey] = Object(_viewjs_utils__WEBPACK_IMPORTED_MODULE_0__["extend"])(target[targetKey] || {}, _defineProperty({}, key, [prop]));
+  }
+}
+/**
+     *
+     * @export
+     * @template
+     * @param {T} target
+     * @param {*} prop
+     * @param {TypedPropertyDescriptor<U>} [descriptor]
+     */
+
+
+function property(target, prop, descriptor) {
+  descriptor = descriptor || Object.getOwnPropertyDescriptor(target, prop);
+
+  if (!descriptor) {
+    return {
+      get: getter(target, prop),
+      set: setter(target, prop),
+      enumerable: false,
+      configurable: false
+    };
+  } else if (descriptor.set) {
+    descriptor.set = setter(target, prop);
+    descriptor.get = getter(target, prop);
+    if (descriptor.value) target.set(prop, descriptor.value);
+    delete descriptor.value;
+  }
+
+  return descriptor;
+}
+function idAttribute(prop) {
+  return function (target) {
+    target.idAttribute = prop;
+  };
+}
+var model;
+
+(function (model) {
+  function event(event, property) {
+    return function (target, prop, desc) {
+      return _event(event, property, target, prop, desc, "modelEvents");
+    };
+  }
+
+  model.event = event;
+
+  function change(property) {
+    return event("change", property);
+  }
+
+  model.change = change;
+})(model || (model = {}));
+
+var decorators = /*#__PURE__*/Object.freeze({
+    property: property,
+    idAttribute: idAttribute,
+    get model () { return model; }
+});
+
+
+
 
 /***/ }),
-/* 11 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2978,7 +3080,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var events_1 = __webpack_require__(6);
 
-var html_1 = __webpack_require__(12);
+var html_1 = __webpack_require__(9);
 
 var utils_1 = __webpack_require__(4);
 
@@ -3037,7 +3139,7 @@ function (_events_1$withEventLi) {
     value: function onElementChanged() {
       if (this._setting) return;
       this._setting = true;
-      this.model.set(this.prop, html_1.getValue(this.element) || '');
+      this.model.set(this.prop, html_1.getValue(this.element) || null);
       this._setting = false;
     }
   }, {
@@ -3132,7 +3234,7 @@ function withBindings(Base) {
 exports.withBindings = withBindings;
 
 /***/ }),
-/* 12 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3704,7 +3806,7 @@ function html(query, context) {
 
 
 /***/ }),
-/* 13 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

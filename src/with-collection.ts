@@ -1,9 +1,8 @@
 import { View, BaseViewOptions, IView } from '@viewjs/view';
-import { IModel, ICollection, ModelEvents, ModelConstructor } from './types';
+import { ModelEvents } from './types';
 import { triggerMethodOn, Constructor, Invoker, getOption } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
-import { IModelController } from './with-model';
-import { ModelCollection } from './model-collection';
+import { IModel, IModelController, ModelCollection, ICollection, ModelConstructor } from '@viewjs/models';
 
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {
     collection?: TCollection;

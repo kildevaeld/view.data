@@ -1,9 +1,7 @@
 import { withCollection } from '../with-collection';
-import { ModelCollection } from '../model-collection';
-import { withModel } from '../with-model';
+import { ModelCollection, withModel, Model } from '@viewjs/models';
 import { withBindings } from '../with-bindings';
 import { TemplateView } from '../template-view';
-import { Model } from '../model';
 import { event } from '@viewjs/view';
 
 class ListItem extends withBindings(withModel(TemplateView)) {

@@ -9,7 +9,6 @@ export interface TemplateViewOptions<M> extends BaseViewOptions<HTMLElement> {
     model?: M
 }
 
-
 export class TemplateView<M = any> extends withTemplate<Constructor<View & IViewElement>, any>(withElement(View)) implements IViewTemplate<M> {
 
     model: M;

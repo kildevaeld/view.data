@@ -1,6 +1,5 @@
-import { Model } from './model';
+import { Model, ModelCollection } from '@viewjs/models';
 import { Constructor, isPlainObject, Invoker } from '@viewjs/utils';
-import { ModelCollection } from './model-collection';
 
 type MetaData = { [key: string]: any };
 

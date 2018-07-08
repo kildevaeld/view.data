@@ -1,52 +1,7 @@
-import { IModel, ICollection } from './types';
-import { IModelController } from './with-model';
 import { ICollectionView, ChildViewType } from './with-collection';
-import { has, extend, Constructor } from '@viewjs/utils';
+import { has, extend } from '@viewjs/utils';
+import { IModel, ICollection } from '@viewjs/models';
 
-function setter<T extends IModel, U>(_: T, prop: any) {
-    return function $observableSetter(this: T, value: U) {
-        return this.set(prop, value)
-    }
-}
-
-
-function getter<T extends IModel, U>(_: T, prop: any) {
-    return function $observableGetter(this: T): U {
-        return this.get<U>(prop)
-    }
-}
-
-/**
- *
- * @export
- * @template
- * @param {T} target
- * @param {*} prop
- * @param {TypedPropertyDescriptor<U>} [descriptor]
- */
-export function property<T extends IModel, U>(target: T, prop: any, descriptor?: TypedPropertyDescriptor<U>) {
-    descriptor = descriptor || Object.getOwnPropertyDescriptor(target, prop);
-    if (!descriptor) {
-
-        descriptor = {
-            get: getter<T, U>(target, prop),
-            set: setter<T, U>(target, prop),
-            enumerable: false,
-            configurable: false
-        }
-        Object.defineProperty(target, prop, descriptor);
-    } else if (descriptor.set) {
-        descriptor.set = function $observableSet(this: IModel, value: U) {
-            return this.set(prop, value);
-        }
-    }
-}
-
-export function primaryKey(prop: string) {
-    return function <T extends Constructor<IModel>>(target: T) {
-        (target as any).idAttribute = prop;
-    }
-}
 
 function _event<T extends any>(event: string, property: string | undefined, target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>, targetKey: string) {
     if (!desc) throw new Error('no description');
@@ -66,21 +21,6 @@ function _event<T extends any>(event: string, property: string | undefined, targ
         });
 
     }
-}
-
-
-export namespace model {
-
-    export function event(event: string, property?: string) {
-        return function <T extends IModelController<M>, M extends IModel>(target: T, prop: string, desc: TypedPropertyDescriptor<(...args: any[]) => any>) {
-            return _event(event, property, target, prop, desc, "modelEvents");
-        }
-    }
-
-    export function change(property?: string) {
-        return event("change", property);
-    }
-
 }
 
 export namespace collection {
