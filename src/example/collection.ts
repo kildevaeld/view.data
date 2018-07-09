@@ -8,6 +8,8 @@ class ListItem extends withBindings(withModel(TemplateView)) {
     template = () => `<span bind="text"></span>`
 };
 
+
+
 export class List extends withCollection(TemplateView, ListItem, ModelCollection, Model) {
     template = () => `
         <button>Sort</button>

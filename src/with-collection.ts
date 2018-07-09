@@ -1,18 +1,18 @@
-import { View, BaseViewOptions, IView } from '@viewjs/view';
+import { View, BaseViewOptions, IView, IViewTemplate } from '@viewjs/view';
 import { ModelEvents } from './types';
-import { triggerMethodOn, Constructor, Invoker, getOption } from '@viewjs/utils';
+import { triggerMethodOn, Constructor, Invoker, getOption, isFunction } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
-import { IModel, IModelController, ModelCollection, ICollection, ModelConstructor } from '@viewjs/models';
+import { IModel, ModelCollection, ICollection, ModelConstructor } from '@viewjs/models';
 
-export interface ICollectionView<TCollection extends ICollection<TModel>, TModel extends IModel, TView extends ChildViewType<TModel>> {
+export interface ICollectionView<TCollection extends ICollection<TModel>, TModel, TView extends ChildViewType<TModel>> {
     collection?: TCollection;
     readonly childViews: TView[];
     collectionEvents?: any;
 }
 
-export type ChildViewType<M extends IModel> = IModelController<M> & IView
+export type ChildViewType<M> = IViewTemplate<M> & IView
 
-export interface CollectionViewOptions<T extends Element, U extends ChildViewType<IModel>> extends BaseViewOptions<T> {
+export interface CollectionViewOptions<T extends Element, U extends ChildViewType<any>> extends BaseViewOptions<T> {
     childViewContainer?: string;
     eventProxyName?: string;
     childView?: Constructor<U>
@@ -22,7 +22,7 @@ export function withCollection<
     TBaseType extends Constructor<View>,
     TView extends ChildViewType<TModel>,
     TCollection extends ICollection<TModel>,
-    TModel extends IModel = IModel>(Base: TBaseType, CView: Constructor<TView>, CCollection?: Constructor<TCollection>, MModel?: ModelConstructor<TModel>): TBaseType & Constructor<ICollectionView<TCollection, TModel, TView>> {
+    TModel = any>(Base: TBaseType, CView: Constructor<TView>, CCollection?: Constructor<TCollection>, MModel?: ModelConstructor<TModel>): TBaseType & Constructor<ICollectionView<TCollection, TModel, TView>> {
 
     return class extends Base {
 
@@ -152,8 +152,10 @@ export function withCollection<
             let Vi: Constructor<TView> = getOption('ChildView', [this.options, this]) || View as any;
 
             let el = Invoker.get<TView>(Vi);
-            el.setModel(model, false);
-
+            if (isFunction((el as any).isModel))
+                (el as any).setModel(model, false);
+            else
+                el.model = model;
 
             return el as TView;
 
