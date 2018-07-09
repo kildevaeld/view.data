@@ -1,7 +1,6 @@
 import { View } from '@viewjs/view';
 import { IEventListener } from '@viewjs/events';
-import { IModel } from './types';
-import { IModelController } from './with-model';
+import { IModelController, IModel } from '@viewjs/models';
 import { Constructor, Base } from '@viewjs/utils';
 export interface IBindableView {
     bindings: BindingDescription[];

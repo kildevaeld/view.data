@@ -1,6 +1,5 @@
-import { Model } from './model';
+import { Model, ModelCollection } from '@viewjs/models';
 import { Constructor } from '@viewjs/utils';
-import { ModelCollection } from './model-collection';
 declare type MetaData = {
     [key: string]: any;
 };

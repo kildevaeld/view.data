@@ -495,7 +495,6 @@
               var Vi = utils.getOption('ChildView', [this.options, this]) || view.View;
               var el = utils.Invoker.get(Vi);
               el.setModel(model, false);
-              el.options.attachId = true;
               return el;
             }
           }, {

@@ -499,7 +499,6 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
           var Vi = getOption('ChildView', [this.options, this]) || View;
           var el = Invoker.get(Vi);
           el.setModel(model, false);
-          el.options.attachId = true;
           return el;
         }
       }, {
