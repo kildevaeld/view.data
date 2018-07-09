@@ -33,7 +33,7 @@ const count = (char: string, count: number) => {
 }
 
 const chars = 'abcdfeghijklmnop';
-let out = [];
+// let out = [];
 let collection = new ModelCollection();
 console.time('Generate')
 for (let i = 0; i < 10000; i++) {

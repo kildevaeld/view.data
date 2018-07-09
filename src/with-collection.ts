@@ -121,7 +121,6 @@ export function withCollection<
 
                 this._attachChildView(frag, view, i);
 
-
             }
 
             container.appendChild(frag);
@@ -146,17 +145,15 @@ export function withCollection<
 
             if (isEventEmitter(view))
                 this._proxyChildViewEvents(view);
-
         }
-
 
         protected _createChildView(model: TModel): TView {
 
             let Vi: Constructor<TView> = getOption('ChildView', [this.options, this]) || View as any;
 
-            let el = Invoker.get<any>(Vi);
+            let el = Invoker.get<TView>(Vi);
             el.setModel(model, false);
-            el.options.attachId = true;
+
 
             return el as TView;
 
