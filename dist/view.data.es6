@@ -498,7 +498,7 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
         value: function _createChildView(model) {
           var Vi = getOption('ChildView', [this.options, this]) || View;
           var el = Invoker.get(Vi);
-          el.setModel(model, false);
+          if (isFunction(el.isModel)) el.setModel(model, false);else el.model = model;
           return el;
         }
       }, {

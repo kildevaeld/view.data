@@ -494,7 +494,7 @@
             value: function _createChildView(model) {
               var Vi = utils.getOption('ChildView', [this.options, this]) || view.View;
               var el = utils.Invoker.get(Vi);
-              el.setModel(model, false);
+              if (utils.isFunction(el.isModel)) el.setModel(model, false);else el.model = model;
               return el;
             }
           }, {
