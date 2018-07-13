@@ -60,11 +60,9 @@ export function withCollection<
             super.render();
 
             if (!this.collection || !this.el) return this;
-            console.time('render collection');
-            this._renderCollection();
-            console.timeEnd('render collection')
 
-            //this.delegateEvents();
+            this._renderCollection();
+
 
             return this;
         }
@@ -126,8 +124,6 @@ export function withCollection<
             container.appendChild(frag);
 
         }
-
-
 
         protected _renderChildView(view: TView) {
             view.render();

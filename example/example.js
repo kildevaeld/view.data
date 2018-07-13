@@ -2943,11 +2943,8 @@ function withCollection(Base, CView, CCollection, MModel) {
           _get(_getPrototypeOf(_class.prototype), "render", this).call(this);
 
           if (!this.collection || !this.el) return this;
-          console.time('render collection');
 
           this._renderCollection();
-
-          console.timeEnd('render collection'); //this.delegateEvents();
 
           return this;
         }
