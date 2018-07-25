@@ -78,7 +78,7 @@ export interface BindingViewOptions {
     bindingAttribute?: string;
 }
 
-export function withBindings<T extends Constructor<View> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
+export function withBindings<T extends Constructor<View & IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView> {
     return class extends Base {
         bindings: BindingDescription[];
 

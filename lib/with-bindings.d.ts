@@ -24,5 +24,5 @@ export declare class Binding extends Binding_base implements IEventListener {
 export interface BindingViewOptions {
     bindingAttribute?: string;
 }
-export declare function withBindings<T extends Constructor<View> & Constructor<IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView>;
+export declare function withBindings<T extends Constructor<View & IModelController<M>>, M extends IModel>(Base: T): T & Constructor<IBindableView>;
 export {};
