@@ -69,6 +69,7 @@ export class Binding extends withEventListener(Base) implements IEventListener {
         this.stopListening();
         if (this._bounded && this.element)
             this.element.removeEventListener(this._bounded, this.onElementChanged);
+        return this;
     }
 
 }

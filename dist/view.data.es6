@@ -2,21 +2,7 @@ import { has, extend, isFunction, getOption, isString, Base, triggerMethodOn, In
 import { View, withTemplate, withElement } from '@viewjs/view';
 import { withEventListener, isEventEmitter } from '@viewjs/events';
 import { setValue, getValue, html } from '@viewjs/html';
-import { ModelCollection } from '@viewjs/models';
-
-var ModelEvents;
-
-(function (ModelEvents) {
-  ModelEvents.Add = "add";
-  ModelEvents.BeforeRemove = "before:remove";
-  ModelEvents.Remove = "remove";
-  ModelEvents.Clear = "clear";
-  ModelEvents.BeforeSort = "before:sort";
-  ModelEvents.Sort = "sort";
-  ModelEvents.Change = "change";
-  ModelEvents.BeforeReset = "before:reset";
-  ModelEvents.Reset = "reset";
-})(ModelEvents || (ModelEvents = {}));
+import { ModelCollection, ModelEvents } from '@viewjs/models';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -285,6 +271,7 @@ function (_withEventListener) {
     value: function destroy() {
       this.stopListening();
       if (this._bounded && this.element) this.element.removeEventListener(this._bounded, this.onElementChanged);
+      return this;
     }
   }]);
 
@@ -599,4 +586,4 @@ function withCollection(Base$$1, CView, CCollection, MModel) {
   );
 }
 
-export { ModelEvents, collection, TemplateView, withBindings, Binding, withCollection };
+export { collection, TemplateView, withBindings, Binding, withCollection };

@@ -55,6 +55,7 @@ class Page extends withAttachedViews(withTemplate(View)) {
     template = () => `
         <h1>Todos</h1>
         <button class="create-btn">Create</button>
+        <button class="clear-btn">Clear</button>
         <button class="dump-btn">Dump</button>
         <ul class="list-view"></ul>
 
@@ -75,6 +76,11 @@ class Page extends withAttachedViews(withTemplate(View)) {
     @event.click('.dump-btn')
     onDumpClicked() {
         console.log(this.list.collection.toJSON())
+    }
+
+    @event.click('.clear-btn')
+    onClear() {
+        this.list.collection = new Todos();
     }
 }
 

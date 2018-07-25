@@ -251,7 +251,7 @@ function (_view_1$withAttachedV) {
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(Page).apply(this, arguments));
 
     _this3.template = function () {
-      return "\n        <h1>Todos</h1>\n        <button class=\"create-btn\">Create</button>\n        <button class=\"dump-btn\">Dump</button>\n        <ul class=\"list-view\"></ul>\n\n    ";
+      return "\n        <h1>Todos</h1>\n        <button class=\"create-btn\">Create</button>\n        <button class=\"clear-btn\">Clear</button>\n        <button class=\"dump-btn\">Dump</button>\n        <ul class=\"list-view\"></ul>\n\n    ";
     };
 
     return _this3;
@@ -270,6 +270,11 @@ function (_view_1$withAttachedV) {
     value: function onDumpClicked() {
       console.log(this.list.collection.toJSON());
     }
+  }, {
+    key: "onClear",
+    value: function onClear() {
+      this.list.collection = new Todos();
+    }
   }]);
 
   return Page;
@@ -280,6 +285,8 @@ __decorate([view_1.attach('.list-view'), __metadata("design:type", TodoList)], P
 __decorate([view_1.event.click('.create-btn'), __metadata("design:type", Function), __metadata("design:paramtypes", []), __metadata("design:returntype", void 0)], Page.prototype, "onCreateClick", null);
 
 __decorate([view_1.event.click('.dump-btn'), __metadata("design:type", Function), __metadata("design:paramtypes", []), __metadata("design:returntype", void 0)], Page.prototype, "onDumpClicked", null);
+
+__decorate([view_1.event.click('.clear-btn'), __metadata("design:type", Function), __metadata("design:paramtypes", []), __metadata("design:returntype", void 0)], Page.prototype, "onClear", null);
 
 new Page({
   el: document.querySelector('#main')
@@ -302,8 +309,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-__export(__webpack_require__(2));
-
 __export(__webpack_require__(3));
 
 __export(__webpack_require__(5));
@@ -313,30 +318,7 @@ __export(__webpack_require__(7));
 __export(__webpack_require__(10));
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var ModelEvents;
-
-(function (ModelEvents) {
-  ModelEvents.Add = "add";
-  ModelEvents.BeforeRemove = "before:remove";
-  ModelEvents.Remove = "remove";
-  ModelEvents.Clear = "clear";
-  ModelEvents.BeforeSort = "before:sort";
-  ModelEvents.Sort = "sort";
-  ModelEvents.Change = "change";
-  ModelEvents.BeforeReset = "before:reset";
-  ModelEvents.Reset = "reset";
-})(ModelEvents = exports.ModelEvents || (exports.ModelEvents = {}));
-
-/***/ }),
+/* 2 */,
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1893,6 +1875,7 @@ function (_events_1$withEventLi) {
     value: function destroy() {
       this.stopListening();
       if (this._bounded && this.element) this.element.removeEventListener(this._bounded, this.onElementChanged);
+      return this;
     }
   }]);
 
@@ -2896,8 +2879,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var view_1 = __webpack_require__(6);
 
-var types_1 = __webpack_require__(2);
-
 var utils_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
@@ -3070,10 +3051,10 @@ function withCollection(Base, CView, CCollection, MModel) {
         key: "_addModelEvents",
         value: function _addModelEvents() {
           if (events_1.isEventEmitter(this.collection)) {
-            this.collection.on(types_1.ModelEvents.Add, this._modelAdded, this);
-            this.collection.on(types_1.ModelEvents.Remove, this._modelRemoved, this);
-            this.collection.on(types_1.ModelEvents.Reset, this.render, this);
-            this.collection.on(types_1.ModelEvents.Sort, this.render, this);
+            this.collection.on(models_1.ModelEvents.Add, this._modelAdded, this);
+            this.collection.on(models_1.ModelEvents.Remove, this._modelRemoved, this);
+            this.collection.on(models_1.ModelEvents.Reset, this.render, this);
+            this.collection.on(models_1.ModelEvents.Sort, this.render, this);
           }
         }
       }, {

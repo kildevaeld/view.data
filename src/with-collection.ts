@@ -1,8 +1,7 @@
 import { View, BaseViewOptions, IView, IViewTemplate } from '@viewjs/view';
-import { ModelEvents } from './types';
 import { triggerMethodOn, Constructor, Invoker, getOption, isFunction } from '@viewjs/utils';
 import { isEventEmitter, IEventEmitter } from '@viewjs/events';
-import { ModelCollection, ICollection, ModelConstructor } from '@viewjs/models';
+import { ModelCollection, ICollection, ModelConstructor, ModelEvents } from '@viewjs/models';
 
 export interface ICollectionView<TCollection extends ICollection<TModel>, TModel, TView extends ChildViewType<TModel>> {
     collection?: TCollection;
@@ -162,6 +161,7 @@ export function withCollection<
             this._childViews.splice(index, 1);
             let container = this._getChildViewContainer();
             container.removeChild(view.el!);
+
             view.destroy();
         }
 

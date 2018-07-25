@@ -1,4 +1,3 @@
-export * from './types';
 export * from './decorators';
 export * from './template-view';
 export * from './with-bindings';

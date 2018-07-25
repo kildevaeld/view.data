@@ -19,7 +19,7 @@ export declare class Binding extends Binding_base implements IEventListener {
     constructor(model: IModel, prop: string, element: HTMLElement);
     onModelChanged(): void;
     onElementChanged(): void;
-    destroy(): void;
+    destroy(): this;
 }
 export interface BindingViewOptions {
     bindingAttribute?: string;
