@@ -299,8 +299,8 @@ function withBindings(Base$$1) {
         }
       }, {
         key: "delegateEvents",
-        value: function delegateEvents() {
-          _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this);
+        value: function delegateEvents(events) {
+          _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this, events);
 
           this._bindModelDom();
         }

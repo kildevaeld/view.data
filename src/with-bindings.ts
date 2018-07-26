@@ -1,4 +1,4 @@
-import { View } from '@viewjs/view';
+import { View, EventsMap } from '@viewjs/view';
 import { withEventListener, IEventListener, isEventEmitter } from '@viewjs/events';
 import { IModelController, IModel } from '@viewjs/models';
 import { setValue, getValue, html } from '@viewjs/html';
@@ -89,8 +89,8 @@ export function withBindings<T extends Constructor<View & IModelController<M>>, 
             return super.setModel(model, trigger);
         }
 
-        delegateEvents() {
-            super.delegateEvents();
+        delegateEvents(events?: EventsMap) {
+            super.delegateEvents(events);
             this._bindModelDom();
         }
 

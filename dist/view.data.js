@@ -297,8 +297,8 @@
           }
         }, {
           key: "delegateEvents",
-          value: function delegateEvents() {
-            _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this);
+          value: function delegateEvents(events$$1) {
+            _get(_getPrototypeOf(_class.prototype), "delegateEvents", this).call(this, events$$1);
 
             this._bindModelDom();
           }
